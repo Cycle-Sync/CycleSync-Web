@@ -7,12 +7,12 @@ psycopg2-binary
 sqlparse==0.5.1
 virtualenv==20.26.3
 requests
-numpy
-keras
-tensorflow
-scikit-learn
-pandas
-matplotlib
 django-countries  
 django-select2
 django-formtools
+# numpy
+# keras
+# tensorflow
+# scikit-learn
+# pandas
+# matplotlib
