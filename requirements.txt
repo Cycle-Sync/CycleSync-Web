@@ -10,9 +10,10 @@ requests
 django-countries  
 django-select2
 django-formtools
-# numpy
-# keras
-# tensorflow
-# scikit-learn
-# pandas
-# matplotlib
+whitenoise
+numpy
+keras
+tensorflow
+scikit-learn
+pandas
+matplotlib
