@@ -6,11 +6,6 @@ from django.contrib.auth.models import User
 from .models import *
 from .forms import *
 from django.contrib import messages
-#from .utils import load_global_model, save_user_model, update_user_model, predict_next_cycle
-#from tensorflow.keras.models import clone_model
-import matplotlib.pyplot as plt
-from io import BytesIO
-import base64
 from datetime import date, timedelta
 from django.utils import timezone
 import calendar
@@ -293,62 +288,3 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect('/')
-
-# Dashboard view
-# @login_required(login_url='login')
-# def dashboard(request):
-#     cycles = Cycle.objects.filter(user=request.user).order_by('start_date')
-#     start_dates = [cycle.start_date for cycle in cycles]
-#     cycle_lengths = [(start_dates[i+1] - start_dates[i]).days for i in range(len(start_dates)-1)] if len(start_dates) > 1 else []
-#     current_cycle_day = None
-#     predicted_date = None
-#     plot_image = None
-
-#     # Calculate current cycle day
-#     if cycles:
-#         last_start = max(c.start_date for c in cycles if c.start_date <= date.today())
-#         current_cycle_day = (date.today() - last_start).days + 1
-
-#     # Generate plot and prediction
-#     if cycle_lengths:
-#         plot_image = generate_plot(cycle_lengths)
-#         if len(cycle_lengths) >= 3:  # Minimum for prediction
-#             predicted_date = predict_next_cycle(request.user.id, cycle_lengths, start_dates[-1])
-
-#     return render(request, 'core/dashboard.html', {
-#         'cycles': cycles,
-#         'cycle_lengths': cycle_lengths,
-#         'current_cycle_day': current_cycle_day,
-#         'predicted_date': predicted_date,
-#         'plot_image': plot_image
-#     })
-
-# Log cycle view
-# @login_required(login_url='login')
-# def log_cycle(request):
-#     if request.method == 'POST':
-#         form = CycleForm(request.POST)
-#         if form.is_valid():
-#             cycle = form.save(commit=False)
-#             cycle.user = request.user
-#             cycle.save()
-#             update_user_model(request.user.id)
-#             return redirect('dashboard')
-#     else:
-#         form = CycleForm()
-#     return render(request, 'core/log_cycle.html', {'form': form})
-
-# # Helper function to generate plot
-# def generate_plot(cycle_lengths):
-#     plt.figure(figsize=(8, 4))
-#     plt.plot(cycle_lengths, marker='o')
-#     plt.title('Cycle Lengths')
-#     plt.xlabel('Cycle')
-#     plt.ylabel('Length (days)')
-#     buf = BytesIO()
-#     plt.savefig(buf, format='png')
-#     buf.seek(0)
-#     image_base64 = base64.b64encode(buf.read()).decode('utf-8')
-#     buf.close()
-#     plt.close()
-#     return image_base64
