@@ -11,9 +11,9 @@ django-countries
 django-select2
 django-formtools
 whitenoise
-numpy
-keras
-tensorflow
-scikit-learn
-pandas
-matplotlib
+# numpy
+# keras
+# tensorflow
+# scikit-learn
+# pandas
+# matplotlib
