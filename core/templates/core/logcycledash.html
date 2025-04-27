@@ -1,0 +1,27 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<h1>Dashboard</h1>
+<h2>Past Cycles</h2>
+<ul>
+    {% for cycle in cycles %}
+        <li>Start: {{ cycle.start_date }}, End: {{ cycle.end_date }}{% if cycle.symptoms %}, Symptoms: {{ cycle.symptoms }}{% endif %}</li>
+    {% empty %}
+        <li>No cycles logged yet.</li>
+    {% endfor %}
+</ul>
+{% if cycle_lengths %}
+    <h2>Cycle Lengths</h2>
+    {% if plot_image %}
+        <img src="data:image/png;base64,{{ plot_image }}" alt="Cycle Lengths Plot">
+    {% endif %}
+    {% if current_cycle_day %}
+        <p>Current Cycle Day: {{ current_cycle_day }} days</p>
+    {% endif %}
+    {% if predicted_date %}
+        <p>Predicted Next Period Start: {{ predicted_date }}</p>
+    {% else %}
+        <p>Need at least 4 cycles for prediction.</p>
+    {% endif %}
+{% endif %}
+<a href="{% url 'log_cycle' %}">Log New Cycle</a>
+{% endblock %}

@@ -1,0 +1,170 @@
+{% extends "core/base.html" %}
+{% comment %} {% extends "core/base.html" %} {% endcomment %}
+
+{% load static %}
+{% block content %}
+<div class="calendar-wrapper">
+<div class="cycle-calendar">
+  <!-- Weekday Header -->
+  <div class="day-names">
+    <div class="day-name">Su</div><div class="day-name">Mo</div>
+    <div class="day-name">Tu</div><div class="day-name">We</div>
+    <div class="day-name">Th</div><div class="day-name">Fr</div>
+    <div class="day-name">Sa</div>
+  </div>
+
+  <!-- Days Grid with Month Separators -->
+  <div class="days-grid">
+    {% for day in days_list %}
+      {% if day.new_month %}
+        <div class="month-separator" style="grid-column: 1 / -1;">
+          {{ day.date|date:"F Y" }}
+        </div>
+      {% endif %}
+      <div
+        class="day-cell {{ day.phase }}{% if day.is_past %} past{% endif %}{% if day.is_today %} today{% endif %}"
+        style="grid-column: {{ day.date.weekday|add:1 }};"
+        title="Day {{ day.day_num }} — {{ day.date|date:'F j, Y' }}"
+      >
+        {{ day.date|date:'j' }}
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Legend Helper -->
+<div class="cycle-legend">
+  <h3>Phase Legend</h3>
+  <ul>
+    <li>
+      <span class="legend-box period"></span>
+      Menstrual (Period)
+    </li>
+    <li>
+      <span class="legend-box follicular"></span>
+      Follicular
+    </li>
+    <li>
+      <span class="legend-box fertile"></span>
+      Fertile Window
+    </li>
+    <li>
+      <span class="legend-box ovulation"></span>
+      Ovulation Day
+    </li>
+    <li>
+      <span class="legend-box luteal"></span>
+      Luteal Phase
+    </li>
+  </ul>
+</div>
+
+{% include "core/cycle_beads.html" %}
+</div>
+<style>
+  /* Calendar Grid */
+  .cycle-calendar {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 0.5rem;
+    margin: 5rem 2rem;
+  }
+
+  .day-names,
+.days-grid {
+  display: grid;
+  /* force each of the 7 columns to match your cell width */
+  grid-template-columns: repeat(7, 3rem) !important;  /* fixed 3rem wide columns */ :contentReference[oaicite:0]{index=0}
+  column-gap: 0.1rem;  /* narrow horizontal gutters */      :contentReference[oaicite:1]{index=1}
+  row-gap:    0.1rem;  /* narrow vertical gutters */      :contentReference[oaicite:2]{index=2}
+}
+  .day-name {
+    text-align: center;
+    font-weight: bold;
+    margin: 0; 
+    box-sizing: border-box;
+    padding: 0.25rem 0;
+    width: 3rem;
+  }
+
+  .month-separator {
+    grid-column: 1 / -1;
+    text-align: center;
+    font-weight: bold;
+    padding: 0.5rem 0;
+    background: rgba(194,24,91,0.1);
+    border-radius: 0.25rem;
+  }
+  .days-grid {
+    grid-auto-rows: 3rem;
+  }
+  .day-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 1.5rem;
+    width: 3rem;
+    font-weight: bold;
+    transition: transform .1s;
+  }
+  .day-cell.past {
+    text-decoration: line-through;
+    opacity: 0.5;
+  }
+  .day-cell.today {
+    border: 3px solid #c2185b;
+    transform: scale(1.2);
+    box-shadow: 0 0 6px rgba(0,0,0,0.2);
+  }
+
+  /* Phase Colors */
+  .day-cell.period     { background: #ff99cc; }
+  .day-cell.follicular { background: #e0b3ff; }
+  .day-cell.fertile    { background: #ffcc66; }
+  .day-cell.ovulation  { background: #66ccff; }
+  .day-cell.luteal     { background: #ccccff; }
+
+  .day-cell:hover {
+    transform: scale(1.1);
+  }
+  .calendar-wrapper {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+  }
+  #calendar { flex: 2; }
+  .cycle-beads-container { flex: 1; }
+  
+  /* Legend Styles */
+  .cycle-legend {
+    margin: 2rem;
+    font-family: sans-serif;
+  }
+  .cycle-legend h3 {
+    margin-bottom: 0.5rem;
+    color: #c2185b;
+  }
+  .cycle-legend ul {
+    list-style: none;
+    padding: 0;
+  }
+  .cycle-legend li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+  .legend-box {
+    width: 1rem;
+    height: 1rem;
+    border-radius: 0.25rem;
+    margin-right: 0.5rem;
+    flex-shrink: 0;
+  }
+  .legend-box.period     { background: #ff99cc; }
+  .legend-box.follicular { background: #e0b3ff; }
+  .legend-box.fertile    { background: #ffcc66; }
+  .legend-box.ovulation  { background: #66ccff; }
+  .legend-box.luteal     { background: #ccccff; }
+</style>
+
+{% endblock %}

@@ -1,0 +1,88 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+:root {
+  --bg: #f8f5f9;
+  --shadow-light: rgba(255,255,255,0.7);
+  --shadow-dark: rgba(0,0,0,0.15);
+  --accent: #c2185b;
+}
+.form-card {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+  border-radius: 2rem;
+  background: var(--bg);
+  box-shadow: 10px 10px 20px var(--shadow-dark), -10px -10px 20px var(--shadow-light);
+}
+.form-card h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+.form-card form input,
+.form-card form select,
+.form-card form textarea {
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border: none;
+  border-radius: 2rem;
+  background: var(--bg);
+  box-shadow: inset 6px 6px 8px var(--shadow-dark), inset -6px -6px 8px var(--shadow-light);
+  font-size: 1rem;
+}
+.form-card form button {
+  width: 100%;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 2rem;
+  background: var(--bg);
+  box-shadow: 6px 6px 8px var(--shadow-dark), -6px -6px 8px var(--shadow-light);
+  font-size: 1rem;
+  color: #333;
+  cursor: pointer;
+  transition: transform .1s;
+}
+.form-card form button:active {
+  transform: scale(0.98);
+}
+</style>
+
+<div class="form-card">
+  <h2>My Profile--{{request.user.username}}</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    {{ form.date_of_birth.label_tag }}
+    {{ form.date_of_birth }}
+
+    {{ form.country.label_tag }}
+    {{ form.country }}
+
+    {{ form.medical_conditions.label_tag }}
+    <div class="checkbox-group">
+      {{ form.medical_conditions }}
+    </div>
+
+    {% comment %} {{ form.last_ovulation.label_tag }}
+    {{ form.last_ovulation }} {% endcomment %}
+
+    {{ form.cycle_type.label_tag }}
+    {{ form.cycle_type }}
+
+    {{ form.cycle_length.label_tag }}
+    {{ form.cycle_length }}
+
+    {{ form.period_length.label_tag }}
+    {{ form.period_length }}
+
+    {% comment %} {{ form.preferences.label_tag }}
+    {{ form.preferences }} {% endcomment %}
+
+    <button type="submit">Save Settings</button>
+  </form>
+</div>
+{% endblock %}

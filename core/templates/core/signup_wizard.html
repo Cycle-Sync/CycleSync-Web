@@ -1,0 +1,226 @@
+{% comment %} {% extends 'core/base.html' %} {% endcomment %}
+{% load static %}
+{% load i18n %}
+<link rel="icon" type="image/x-icon"
+     href="{% static 'img/favicon.ico' %}" />
+<style>
+  /* for signup */
+  :root {
+    /* Gradient background colors */
+    --bg-start: #ffe6f0;        /* pale pink */
+    --bg-end:   #ffffff;        /* white */
+    --bg-angle: 145deg;         /* direction of light source */
+  
+    /* Neumorphic shadows */
+    --shadow-light: rgba(255, 255, 255, 0.7);
+    --shadow-dark:  rgba(0,   0,   0,   0.15);
+    --accent:       rgba(255, 105, 180, 0.2); /* subtle pink glow */
+  }
+  
+  /* Page background */
+  body {
+    background: linear-gradient(var(--bg-angle), var(--bg-start), var(--bg-end));
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+  
+  /* --- Login Page Styles --- */
+  .neumo-container {
+    background: linear-gradient(var(--bg-angle), var(--bg-start), var(--bg-end));
+    padding: 2rem;
+    border-radius: 2rem;
+    box-shadow:
+      10px 10px 20px var(--shadow-dark),
+     -10px -10px 20px var(--shadow-light);
+    max-width: 360px;
+    width: 100%;
+  }
+  
+  .neumo-heading {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #333;
+    text-shadow: 1px 1px 2px var(--shadow-light);
+  }
+  
+  .neumo-form input {
+    width: 100%;
+    padding: 0.75rem;
+    margin: 0.75rem 0;
+    border: none;
+    border-radius: 2rem;
+    background: linear-gradient(var(--bg-angle), var(--bg-start), var(--bg-end));
+    box-shadow:
+      inset 6px 6px 8px var(--shadow-dark),
+      inset -6px -6px 8px var(--shadow-light);
+    font-size: 1rem;
+  }
+  
+  .neumo-btn {
+    width: 100%;
+    padding: 0.75rem;
+    margin-top: 1rem;
+    border: none;
+    border-radius: 2rem;
+    background: linear-gradient(var(--bg-angle), var(--bg-start), var(--bg-end));
+    box-shadow:
+      6px 6px 8px var(--shadow-dark),
+     -6px -6px 8px var(--shadow-light);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.2s;
+  }
+  
+  .neumo-btn:hover {
+    box-shadow:
+      4px 4px 6px var(--shadow-dark),
+     -4px -4px 6px var(--shadow-light),
+      inset 1px 1px 2px var(--accent);
+  }
+  
+  .neumo-btn:active {
+    transform: scale(0.98);
+    box-shadow:
+      inset 4px 4px 6px var(--shadow-dark),
+     inset -4px -4px 6px var(--shadow-light);
+  }
+  
+  /* --- Signup Wizard Styles --- */
+  #wizard-container {
+    background: linear-gradient(var(--bg-angle), var(--bg-start), var(--bg-end));
+    max-width: 400px;
+    margin: auto;
+    padding: 2rem;
+    border-radius: 2rem;
+    box-shadow:
+      10px 10px 20px var(--shadow-dark),
+     -10px -10px 20px var(--shadow-light);
+  }
+  
+  input, select, button {
+    width: 100%;
+    padding: 0.75rem;
+    margin-top: 1rem;
+    border: none;
+    border-radius: 2rem;
+    background: linear-gradient(var(--bg-angle), var(--bg-start), var(--bg-end));
+    box-shadow:
+      inset 6px 6px 8px var(--shadow-dark),
+      inset -6px -6px 8px var(--shadow-light);
+    font-size: 1rem;
+  }
+  
+  button {
+    cursor: pointer;
+    box-shadow:
+      6px 6px 8px var(--shadow-dark),
+     -6px -6px 8px var(--shadow-light);
+    transition: transform 0.1s, box-shadow 0.2s;
+  }
+  
+  button:hover {
+    box-shadow:
+      4px 4px 6px var(--shadow-dark),
+     -4px -4px 6px var(--shadow-light),
+      inset 1px 1px 2px var(--accent);
+  }
+  
+  button:active {
+    transform: scale(0.98);
+    box-shadow:
+      inset 4px 4px 6px var(--shadow-dark),
+     inset -4px -4px 6px var(--shadow-light);
+  }
+  #navin {
+    background: var(--bg-start);
+    color: #333;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    cursor: pointer;
+    box-shadow:
+      6px 6px 8px var(--shadow-dark),
+     -6px -6px 8px var(--shadow-light);
+    transition: transform .1s, box-shadow .2s;
+  }
+  #navin:hover {
+    box-shadow:
+      4px 4px 6px var(--shadow-dark),
+     -4px -4px 6px var(--shadow-light),
+      inset 1px 1px 2px var(--accent);
+  }
+
+</style>
+
+{% block content %}
+<div id="wizard-container">
+  <!-- Progress bar -->
+  <div id="progress">
+    {% for step_name, step_form in wizard.form_list %}
+      <div class="step-indicator" data-step="{{ forloop.counter0 }}">{{ forloop.counter }}.</div>
+    {% endfor %}
+  </div>
+  
+  <form method="post">
+    {% csrf_token %}
+    {{ wizard.management_form }}
+    {{ form.as_p }}
+  
+    <div class="buttons">
+      {% if wizard.steps.prev %} 
+        <button name="wizard_goto_step" value="{{ wizard.steps.prev }}">Previous</button>
+      {% endif %}
+      <button type="submit">
+        {% if wizard.steps.next %}Next{% else %}Submit{% endif %}
+      </button>
+    </div>
+    <div style="text-align: center; margin-top: 1rem;">
+      {# homepage#}
+      <a href="{% url 'home' %}"><button id="navin">To Homepage</button></a>
+    </div>
+  </form>
+  
+</div>
+
+<script>
+// Step navigation
+const steps = document.querySelectorAll('.step');
+let current = 0;
+document.querySelectorAll('.next').forEach(btn => {
+  btn.onclick = () => {
+    if (current === 2) checkUsername();  //AJAX on username step
+    else navigate(current+1);
+  };
+});
+document.querySelectorAll('.prev').forEach(btn => {
+  btn.onclick = () => navigate(current-1);
+});
+function navigate(idx) {
+  steps[current].style.display='none';
+  steps[idx].style.display='block';
+  current = idx;
+}
+
+// AJAX username check (on blur or Next)
+function checkUsername() {
+  const usr = document.querySelector('input[name="username"]').value;
+  fetch(`{% url 'validate_username' %}?username=${usr}`)
+    .then(res=>res.json())
+    .then(data=>{
+      if (!data.available) {
+        alert('Username taken!');
+      } else navigate(current+1);
+    });
+}
+
+// Initialize Select2 on country field
+$(document).ready(() => {
+  $('select[name="country"]').select2({ width: '100%' });
+});
+</script>
+{% endblock %}

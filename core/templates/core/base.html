@@ -1,0 +1,193 @@
+{% load static %}    
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{% block title %}CycleSyNC🫧{% endblock %}</title>
+     <!-- 2️⃣ Now static is registered, so this works: -->
+     <link rel="icon" type="image/x-icon"
+     href="{% static 'img/favicon.ico' %}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Anime.js CDN -->
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"
+      integrity="sha512-7VZt+3gJt6FjC03Tvpc4tpDqFQZoEFR+FlH9mt2zhYdiuS0HfM5woIhV4x3JiJf7ka1O77Ih/I7ReO1r5XFPmw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"
+    ></script>
+    <style>
+      #logo {
+        display: inline-block;
+        font-size: 2rem;
+        color: #ff69b4; /* pink */
+      }
+      :root {
+        --bg-start: #ffe6f0; /* pale pink */
+        --bg-end: #ffffff; /* white */
+        --bg-angle: 145deg; /* angle of the light source */
+        --shadow-light: rgba(255, 255, 255, 0.7);
+        --shadow-dark: rgba(0, 0, 0, 0.15);
+        --accent: rgba(255, 105, 180, 0.2);
+      }
+      /* Heading style */
+      .neumo-heading {
+        text-align: center;
+        margin-bottom: 1.5rem;
+        color: #333;
+        text-shadow: 1px 1px 2px var(--shadow-light);
+      }
+      body {
+        background: linear-gradient(
+          var(--bg-angle),
+          var(--bg-start),
+          var(--bg-end)
+        );
+        font-family: sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background-color: white;
+        padding: 10px 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+      nav {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        background-color: #f8f9fa;
+      }
+      .nav-links {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+        flex-grow: 1;
+      }
+      nav a {
+        text-decoration: none;
+        color: #333;
+        font-weight: bold;
+      }
+      nav a:hover {
+        color: #ff69b4; /* pink */
+        transform: scale(1.75); /* Slightly enlarge on hover */
+        transition: transform 0.3s ease; /* Smooth transition */
+      }
+      main {
+        margin-top: 80px; /* Adjust this value based on your header height */
+      }
+      .alert-success {
+        background-color: #d4edda;
+        color: #155724;
+        padding: 0.75rem 1.25rem;
+        border-radius: 0.25rem;
+        margin-bottom: 1rem;
+      }
+      .profile-img {
+        width: 40px; /* Adjust size as needed */
+        height: 40px; /* Match width for a perfect circle */
+        border-radius: 50%; /* This creates the circular shape */
+        object-fit: cover; /* Ensures the image fits within the circle */
+        border: 2px solid #ffffff; /* Optional: Add a border */
+        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* Optional: Add a subtle shadow */
+      }      
+
+      .alert-danger {
+        background-color: #f8d7da;
+        color: #721c24;
+        padding: 0.75rem 1.25rem;
+        border-radius: 0.25rem;
+        margin-bottom: 1rem;
+      }
+      .mess {
+        top: 20px;
+        align-items: center;
+        justify-content: center;
+        display: flex;
+        z-index: 1000;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <nav>
+        {% if user.is_authenticated %}
+        <a href="{% url 'dashboard' %}">
+          <span id="logo"><b>C</b>ycle<b>S</b>y<i>NC</i> <sup>🫧</sup></span>
+        </a>
+        <div class="nav-links">
+          <a href="{% url 'dashboard' %}"><img src="{% static  'img/home.svg' %}" alt="home" style="width:24px; height:24;" /></a>
+          <a href="{% url 'profile' %}">
+            <img src="{{ request.user.profile.profile_image.url }}" alt="profile" class="profile-img" />
+            <sup style="color:#ff69b4;">{{request.user.username}}</sup style="color:#ff69b4;">
+          </a>
+          
+          <a href="{% url 'calendar' %}"
+            ><img src="{% static  'img/calendar-clock.svg' %}" alt="home" style="width:24px; height:24;" />
+          </a>
+          <a href="{% url 'daily_log' %}">Logs</a>
+          <a href="#">Read</a>
+
+          <a href="{% url 'logout' %}">
+            <img src="{% static 'img/logout.svg' %}" alt="logout" />
+          </a>
+        </div>
+        {% else %}
+        <a href="{% url 'signup' %}">
+          <span id="logo">Menstra</span>
+        </a>
+        <div class="nav-links">
+          <a href="{% url 'login' %}">Login</a>
+        </div>
+        {% endif %}
+      </nav>
+      <div class="mess">
+        {% if messages %}
+        <div class="messages">
+          {% for msg in messages %}
+          <div
+            class="alert {% if msg.tags == 'success' %}alert-success{% else %}alert-danger{% endif %}"
+            role="alert"
+          >
+            {{ msg }}
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+    </header>
+
+    <main>{% block content %}{% endblock %}</main>
+
+    <script defer>
+      document.addEventListener("DOMContentLoaded", function () {
+        anime({
+          targets: "#logo",
+          translateY: [
+            { value: -10, duration: 600 },
+            { value: 0, duration: 600 },
+          ],
+          scale: [
+            { value: 1.1, duration: 600, easing: "easeOutQuad" },
+            { value: 1.0, duration: 600, easing: "easeInQuad" },
+          ],
+          loop: true,
+          delay: 500,
+        });
+      });
+    </script>
+  </body>
+</html>

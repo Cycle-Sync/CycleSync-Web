@@ -1,0 +1,195 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block content %}
+
+<style>
+  :root {
+    --bg: #f8f5f9;
+    --shadow-light: rgba(255,255,255,0.7);
+    --shadow-dark:  rgba(0,0,0,0.15);
+    --accent:      #c2185b;
+  }
+  body { background: var(--bg); }
+
+  .log-card {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 2rem;
+    border-radius: 1.5rem;
+    background: var(--bg);
+    box-shadow:
+      10px 10px 20px var(--shadow-dark),
+     -10px -10px 20px var(--shadow-light);
+  }
+
+  .entry-row {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    column-gap: 0.5rem;
+    row-gap:    1rem;
+    margin-bottom: 2rem;
+  }
+  .entry-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .entry-cell.empty { visibility: hidden; }
+
+  .section-header {
+    grid-column: 1 / -1;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #333;
+    margin: 0.5rem 0;
+  }
+
+  .entry-cell label {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: #444;
+  }
+
+  input[type="range"] {
+    width: 100%;
+    appearance: none;
+    background: var(--bg);
+    box-shadow:
+      inset 6px 6px 8px var(--shadow-dark),
+      inset -6px -6px 8px var(--shadow-light);
+    height: 4px;
+    border-radius: 2px;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 16px; height: 16px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow:
+      2px 2px 4px var(--shadow-dark),
+     -2px -2px 4px var(--shadow-light);
+    cursor: pointer;
+  }
+  .value-display {
+    margin-top: 0.25rem;
+    font-size: 0.8rem;
+    color: #555;
+  }
+
+  textarea {
+    width: 100%;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    box-shadow:
+      inset 6px 6px 8px var(--shadow-dark),
+      inset -6px -6px 8px var(--shadow-light);
+    border: none;
+    resize: vertical;
+    min-height: 4rem;
+  }
+
+  .save-button {
+    width: 100%;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 2rem;
+    background: var(--bg);
+    box-shadow:
+      6px 6px 8px var(--shadow-dark),
+     -6px -6px 8px var(--shadow-light);
+    font-size: 1rem;
+    color: #333;
+    cursor: pointer;
+    transition: transform .1s;
+  }
+  .save-button:active { transform: scale(0.98); }
+
+  .error {
+    color: #d32f2f;
+    margin-top: 1rem;
+    text-align: center;
+  }
+</style>
+
+<div class="log-card">
+  <h1 class="neumo-heading">Daily Log</h1>
+  <p class="neumo-heading">Track your symptoms and observations</p>
+  <p class="neumo-heading">Today: {{ today|date:"F j, Y" }}</p>
+
+  {# Display the form with the fields for physical, emotional, cervical, and additional metrics #}
+ 
+  {# Display the form with the fields for physical, emotional, cervical, and additional metrics #}
+  <form method="post">
+    {% csrf_token %}
+
+    <div class="entry-row">
+      {# pad empty cells until today’s column #}
+      {% for _ in day_index|default:1|add:"-1"|make_list %}
+        <div class="entry-cell empty"></div>
+      {% endfor %}
+
+      {# Physical Symptoms #}
+      <div class="section-header">Physical Symptoms</div>
+      {% for field in physical_fields %}
+        <div class="entry-cell">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          <span class="value-display" data-target="{{ field.id_for_label }}"></span>
+        </div>
+      {% endfor %}
+
+      {# Emotional Symptoms #}
+      <div class="section-header">Emotional Symptoms</div>
+      {% for field in emotional_fields %}
+        <div class="entry-cell">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          <span class="value-display" data-target="{{ field.id_for_label }}"></span>
+        </div>
+      {% endfor %}
+
+      {# Cervical Observations #}
+      <div class="section-header">Cervical Observations</div>
+      {% for field in cervical_fields %}
+        <div class="entry-cell">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+        </div>
+      {% endfor %}
+
+      {# Additional Metrics #}
+      <div class="section-header">Additional Metrics</div>
+      {% for field in additional_fields %}
+        <div class="entry-cell">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          <span class="value-display" data-target="{{ field.id_for_label }}"></span>
+        </div>
+      {% endfor %}
+
+      {# Notes #}
+      <div class="section-header">Notes</div>
+      <div class="entry-cell" style="grid-column: 1 / -1;">
+        {{ form.notes.label_tag }}
+        {{ form.notes }}
+      </div>
+    </div>
+
+    <button type="submit" class="save-button">Save Today’s Log</button>
+    {% if form.non_field_errors %}
+      <div class="error">{{ form.non_field_errors }}</div>
+    {% endif %}
+  </form>
+</div>
+
+<script>
+  // Live-update slider values
+  document.querySelectorAll('input[type="range"]').forEach(input => {
+    const disp   = document.querySelector(`.value-display[data-target="${input.id}"]`);
+    const update = () => disp.textContent = input.value;
+    input.addEventListener('input', update);
+    update();
+  });
+</script>
+
+{% endblock %}
