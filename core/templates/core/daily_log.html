@@ -4,15 +4,17 @@
 
 <style>
   :root {
-    --bg: #f8f5f9;
+    --bg:          #f8f5f9;
     --shadow-light: rgba(255,255,255,0.7);
     --shadow-dark:  rgba(0,0,0,0.15);
     --accent:      #c2185b;
   }
   body { background: var(--bg); }
 
+  /* 1) Fluid card container */
   .log-card {
-    max-width: 900px;
+    width: 90%;                         /* Fluid layout */ 
+    max-width: 900px;                   /* Cap at 900px */ :contentReference[oaicite:5]{index=5}
     margin: 2rem auto;
     padding: 2rem;
     border-radius: 1.5rem;
@@ -22,12 +24,14 @@
      -10px -10px 20px var(--shadow-light);
   }
 
+  /* 2) Responsive grid for entries */
   .entry-row {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    column-gap: 0.5rem;
-    row-gap:    1rem;
+    grid-template-columns: repeat(auto-fit,
+                                  minmax(120px, 1fr));     /* Fluid columns */ :contentReference[oaicite:6]{index=6}
+    gap: 1rem;                             /* Uniform row & column gaps */
     margin-bottom: 2rem;
+    grid-auto-rows: minmax(3rem, auto);    /* Adaptive row height */ :contentReference[oaicite:7]{index=7}
   }
   .entry-cell {
     display: flex;
@@ -50,6 +54,7 @@
     color: #444;
   }
 
+  /* 3) Neumorphic range sliders */
   input[type="range"] {
     width: 100%;
     appearance: none;
@@ -76,6 +81,7 @@
     color: #555;
   }
 
+  /* 4) Neumorphic textarea */
   textarea {
     width: 100%;
     padding: 0.5rem;
@@ -88,6 +94,7 @@
     min-height: 4rem;
   }
 
+  /* 5) Save button */
   .save-button {
     width: 100%;
     padding: 0.75rem;
@@ -109,6 +116,34 @@
     margin-top: 1rem;
     text-align: center;
   }
+
+  /* 6) Tablet breakpoint (≤768px) */
+  @media (max-width: 768px) {
+    .entry-row {
+      grid-template-columns: repeat(auto-fit,
+                                    minmax(100px, 1fr));  /* Slightly smaller min width */ :contentReference[oaicite:8]{index=8}
+      gap: 0.75rem;
+    }
+    .section-header { font-size: 1rem; }
+  }
+
+  /* 7) Mobile breakpoint (≤480px) */
+  @media (max-width: 480px) {
+    .entry-row {
+      display: flex;                   /* Stack vertically on phones */ :contentReference[oaicite:9]{index=9}
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .entry-cell {
+      width: 100%;
+    }
+    .section-header { font-size: 0.95rem; }
+    .log-card {
+      padding: 1rem;
+      margin: 1rem auto;
+    }
+    .save-button { padding: 0.5rem; }
+  }
 </style>
 
 <div class="log-card">
@@ -116,39 +151,34 @@
   <p class="neumo-heading">Track your symptoms and observations</p>
   <p class="neumo-heading">Today: {{ today|date:"F j, Y" }}</p>
 
-  {# Display the form with the fields for physical, emotional, cervical, and additional metrics #}
- 
-  {# Display the form with the fields for physical, emotional, cervical, and additional metrics #}
   <form method="post">
     {% csrf_token %}
 
     <div class="entry-row">
-      {# pad empty cells until today’s column #}
       {% for _ in day_index|default:1|add:"-1"|make_list %}
         <div class="entry-cell empty"></div>
       {% endfor %}
 
-      {# Physical Symptoms #}
       <div class="section-header">Physical Symptoms</div>
       {% for field in physical_fields %}
         <div class="entry-cell">
           <label for="{{ field.id_for_label }}">{{ field.label }}</label>
           {{ field }}
-          <span class="value-display" data-target="{{ field.id_for_label }}"></span>
+          <span class="value-display"
+                data-target="{{ field.id_for_label }}"></span>
         </div>
       {% endfor %}
 
-      {# Emotional Symptoms #}
       <div class="section-header">Emotional Symptoms</div>
       {% for field in emotional_fields %}
         <div class="entry-cell">
           <label for="{{ field.id_for_label }}">{{ field.label }}</label>
           {{ field }}
-          <span class="value-display" data-target="{{ field.id_for_label }}"></span>
+          <span class="value-display"
+                data-target="{{ field.id_for_label }}"></span>
         </div>
       {% endfor %}
 
-      {# Cervical Observations #}
       <div class="section-header">Cervical Observations</div>
       {% for field in cervical_fields %}
         <div class="entry-cell">
@@ -157,17 +187,16 @@
         </div>
       {% endfor %}
 
-      {# Additional Metrics #}
       <div class="section-header">Additional Metrics</div>
       {% for field in additional_fields %}
         <div class="entry-cell">
           <label for="{{ field.id_for_label }}">{{ field.label }}</label>
           {{ field }}
-          <span class="value-display" data-target="{{ field.id_for_label }}"></span>
+          <span class="value-display"
+                data-target="{{ field.id_for_label }}"></span>
         </div>
       {% endfor %}
 
-      {# Notes #}
       <div class="section-header">Notes</div>
       <div class="entry-cell" style="grid-column: 1 / -1;">
         {{ form.notes.label_tag }}
@@ -185,7 +214,9 @@
 <script>
   // Live-update slider values
   document.querySelectorAll('input[type="range"]').forEach(input => {
-    const disp   = document.querySelector(`.value-display[data-target="${input.id}"]`);
+    const disp = document.querySelector(
+      `.value-display[data-target="${input.id}"]`
+    );
     const update = () => disp.textContent = input.value;
     input.addEventListener('input', update);
     update();

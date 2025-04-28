@@ -1,318 +1,709 @@
- {% load static %}
+{% comment %} {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CycleSync - Welcome</title>
-  <link rel="icon" type="image/x-icon"
-     href="{% static 'img/favicon.ico' %}" />
-  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
-  <style>
-    :root {
-      --bg-start: #ffe6f0;
-      --bg-end: #ffffff;
-      --accent-light: rgba(255,105,180,0.2);
-      --accent-dark: #c2185b;
-      --shadow-light: rgba(255,255,255,0.7);
-      --shadow-dark: rgba(0,0,0,0.15);
-      --font: 'Segoe UI', sans-serif;
-    }
-    * { box-sizing: border-box; margin:0; padding:0; }
-    body {
-     background: #f4f4f4; /*linear-gradient(145deg, var(--bg-start), var(--bg-end));*/
-      font-family: var(--font);
-      overflow-x: hidden;
-    }
-    header {
-      position: fixed; top:0; width:100%; padding:1rem 2rem;
-      display: flex; align-items:right; justify-content:space-between;
-      z-index: 10;
-      align-items: center; /* Center items vertically */  
-      justify-content: flex-end; /* Align items to the right */
-    }
-    nav ul {
-      display:flex; gap:1rem;
-    }
-    nav ul li {
-      list-style: none;
-    }
-    nav ul li a {
-      text-decoration:none;
-      color: var(--accent-dark);
-      font-weight: bold;
-      position: relative;
-      padding: 0.25rem 0.5rem;
-      transition: color .3s;
-    }
-    nav ul li a::after {
-      content: '';
-      position: absolute; left:0; bottom:0;
-      width:0; height:2px;
-      background: var(--accent-dark);
-      transition: width .3s;
-    }
-    nav ul li a:hover {
-      color: darken(var(--accent-dark),0%);
-    }
-    nav ul li a:hover::after {
-      width:100%;
-    }
-    /* Brush logo wrapper */
-    .brush-wrap {
-      position: relative;
-      margin-top: -1rem;
-      width: 100%; height: 40vh;
-      display:flex; align-items:center; justify-content:center;
-      background: url("{% static 'img/brush.jpg' %}") no-repeat center;
-      background-size: 30rem;
-    }
-    .brush-wrap #logo {
-      font-size: 4rem;
-      color: var(--accent-dark);
-      font-style: italic;
-      filter: drop-shadow(0 0 4px rgba(0,0,0,0.2));
-      opacity: 0;
-    }
-    .content {
-      padding: 2rem;
-      text-align: center;
-      color: #333;
-    }
-    .content h2 {
-      font-size: 2.5rem;
-      margin-bottom: 1rem;
-      opacity: 0;
-    }
-    .content p {
-      font-size: 1.1rem;
-      max-width: 600px;
-      margin: auto;
-      opacity: 0;
-    }
-    .btn-primary {
-      display: inline-block;
-      margin-top:2rem;
-      padding: 0.75rem 2rem;
-      background: var(--accent-dark);
-      color: #fff;
-      border-radius: 2rem;
-      text-decoration: none;
-      font-size:1rem;
-      box-shadow: 6px 6px 8px var(--shadow-dark), -6px -6px 8px var(--shadow-light);
-      transform-origin: center;
-      opacity: 0;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CycleSync - Welcome</title>
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="{% static 'img/favicon.ico' %}"
+    />
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"
+    ></script>
+    <style>
+      :root {
+        --bg-start: #ffe6f0;
+        --bg-end: #ffffff;
+        --accent-light: rgba(255, 105, 180, 0.2);
+        --accent-dark: #c2185b;
+        --shadow-light: rgba(255, 255, 255, 0.7);
+        --shadow-dark: rgba(0, 0, 0, 0.15);
+        --font: "Segoe UI", sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: #f4f4f4; /*linear-gradient(145deg, var(--bg-start), var(--bg-end));*/
+        font-family: var(--font);
+        overflow-x: hidden;
+      }
+      header {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        padding: 1rem 2rem;
+        display: flex;
+        align-items: right;
+        justify-content: space-between;
+        z-index: 10;
+        align-items: center; /* Center items vertically */
+        justify-content: flex-end; /* Align items to the right */
+      }
+      nav ul {
+        display: flex;
+        gap: 1rem;
+      }
+      nav ul li {
+        list-style: none;
+      }
+      nav ul li a {
+        text-decoration: none;
+        color: var(--accent-dark);
+        font-weight: bold;
+        position: relative;
+        padding: 0.25rem 0.5rem;
+        transition: color 0.3s;
+      }
+      nav ul li a::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 0;
+        height: 2px;
+        background: var(--accent-dark);
+        transition: width 0.3s;
+      }
+      nav ul li a:hover {
+        color: darken(var(--accent-dark), 0%);
+      }
+      nav ul li a:hover::after {
+        width: 100%;
+      }
+      /* Brush logo wrapper */
+      .brush-wrap {
+        position: relative;
+        margin-top: -1rem;
+        width: 100%;
+        height: 40vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: url("{% static 'img/brush.jpg' %}") no-repeat center;
+        background-size: 30rem;
+      }
+      .brush-wrap #logo {
+        font-size: 4rem;
+        color: var(--accent-dark);
+        font-style: italic;
+        filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.2));
+        opacity: 0;
+      }
+      .content {
+        padding: 2rem;
+        text-align: center;
+        color: #333;
+      }
+      .content h2 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        opacity: 0;
+      }
+      .content p {
+        font-size: 1.1rem;
+        max-width: 600px;
+        margin: auto;
+        opacity: 0;
+      }
+      .btn-primary {
+        display: inline-block;
+        margin-top: 2rem;
+        padding: 0.75rem 2rem;
+        background: var(--accent-dark);
+        color: #fff;
+        border-radius: 2rem;
+        text-decoration: none;
+        font-size: 1rem;
+        box-shadow: 6px 6px 8px var(--shadow-dark),
+          -6px -6px 8px var(--shadow-light);
+        transform-origin: center;
+        opacity: 0;
+      }
 
-    /**? Bubble Animation */     
-       .bub {
-            width: 130px;
-            height: 130px;
-            border: 1px solid white;
-            box-shadow: inset 5px -5px 10px white;
-            border-radius: 50%;
-            background-color: rgba(255, 255, 255, .01);
-            backdrop-filter: blur(2px);
-            position: absolute;
-            bottom: -100px;
-            /* animation: bubble 3s ease-in infinite; */
+      /**? Bubble Animation */
+      .bub {
+        width: 130px;
+        height: 130px;
+        border: 1px solid white;
+        box-shadow: inset 5px -5px 10px white;
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.01);
+        backdrop-filter: blur(2px);
+        position: absolute;
+        bottom: -100px;
+        /* animation: bubble 3s ease-in infinite; */
+      }
+
+      .bub::before {
+        position: absolute;
+        content: "";
+        background-color: white;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        top: 25px;
+        right: 23px;
+        box-shadow: 0px 0px 20px white;
+      }
+
+      .bub.a {
+        left: 10%;
+        animation: bubble2 2s ease-in 1s infinite;
+      }
+
+      .bub.b {
+        left: 20%;
+        animation: bubble 1.5s ease-in 1.4s infinite;
+      }
+
+      .bub.c {
+        left: 28%;
+        animation: bubble 5s ease-in 3.8s infinite;
+      }
+
+      .bub.d {
+        left: 40%;
+        animation: bubble 1.8s ease-in 0.5s infinite;
+      }
+
+      .bub.e {
+        left: 75%;
+        animation: bubble2 2.3s ease-in 2.5s infinite;
+      }
+
+      .bub.f {
+        left: 90%;
+        animation: bubble 2.5s ease-in 3s infinite;
+      }
+
+      .bub.g {
+        left: 60%;
+        animation: bubble 2.2s ease-in 2s infinite;
+      }
+
+      .bub.k {
+        left: 50%;
+        animation: bubble 1.6s ease-in 2s infinite;
+      }
+
+      .bub.i {
+        left: 65%;
+        animation: bubble2 1.8s ease-in 2.1s infinite;
+      }
+
+      .bub.j {
+        left: 3%;
+        animation: bubble 2s ease-in 1.5s infinite;
+      }
+
+      .bub.h {
+        left: 35%;
+        animation: bubble2 3s ease-in infinite;
+      }
+
+      @keyframes bubble {
+        0% {
+          opacity: 0;
         }
-        
-        .bub::before {
-            position: absolute;
-            content: "";
-            background-color: white;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            top: 25px;
-            right: 23px;
-            box-shadow: 0px 0px 20px white;
+        10%,
+        93% {
+          opacity: 1;
         }
-        
-        .bub.a {
-            left: 10%;
-            animation: bubble2 2s ease-in 1s infinite;
+        100% {
+          transform: translate(90px, -700px);
+          display: none;
         }
-        
-        .bub.b {
-            left: 20%;
-            animation: bubble 1.5s ease-in 1.4s infinite;
+      }
+
+      @keyframes bubble2 {
+        0% {
+          opacity: 0;
         }
-        
-        .bub.c {
-            left: 28%;
-            animation: bubble 5s ease-in 3.8s infinite;
+        10%,
+        93% {
+          opacity: 1;
         }
-        
-        .bub.d {
-            left: 40%;
-            animation: bubble 1.8s ease-in .5s infinite;
+        100% {
+          transform: translate(-90px, -700px);
+          display: none;
         }
-        
-        .bub.e {
-            left: 75%;
-            animation: bubble2 2.3s ease-in 2.5s infinite;
+      }
+      .testimonial {
+        /* any container styles */
+        padding: 1rem;
+        text-align: center;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+      }
+
+      .testimonial-img {
+        width: 400px; /* or max-width: 100%; */
+        max-height: 400px; /* preserve aspect ratio */
+        object-fit: contain; /* ensure full image visible */
+        display: block; /* removes inline-gap below image */
+        margin: 0 auto; /* center horizontally */
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <nav>
+        <ul>
+          <li><a href="{% url 'login' %}">Login</a></li>
+          <li><a href="{% url 'signup' %}">Sign Up</a></li>
+          <li><a href="#">More</a></li>
+        </ul>
+      </nav>
+    </header>
+    <section class="brush-wrap">
+      <a href="{% url 'dashboard' %}"><span id="logo">CycleSync</span></a>
+    </section>
+    <section class="content">
+      <h2>Track. Learn. Empower.</h2>
+      <p>
+        Welcome to CycleSync, your personalized menstrual cycle tracker. Stay in
+        tune with your body, log your symptoms, and get tailored insights every
+        day.
+      </p>
+      <a href="{% url 'signup' %}" class="btn-primary">Get Started</a>
+    </section>
+
+    <span class="bub a"></span>
+    <span class="bub b"></span>
+    <span class="bub c"></span>
+    <span class="bub d"></span>
+    {% comment %}<span class="bub e"></span>
+    <span class="bub f"></span>
+    <span class="bub g"></span>
+    <span class="bub h"></span>
+    <span class="bub i"></span>
+    <span class="bub j"></span>
+    <span class="bub k"></span>
+
+    <div class="testimonial">
+      <img
+        src="{% static 'img/girl.png' %}"
+        alt="testimonial"
+        class="testimonial-img"
+      />
+      <!-- more content here -->
+      <img src="{% static 'img/horm.png' %}" alt="" class="testimonial-img" />
+    </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // Logo fade-in & scale
+        anime({
+          targets: "#logo",
+          opacity: [0, 1],
+          scale: [0.5, 1],
+          duration: 1500,
+          easing: "spring(1, 80, 10, 0)",
+        });
+        // Headline slide-in
+        anime({
+          targets: ".content h2",
+          translateY: [50, 0],
+          opacity: [0, 1],
+          delay: 800,
+          duration: 1000,
+          easing: "easeOutExpo",
+        });
+        // Paragraph fade-in
+        anime({
+          targets: ".content p",
+          opacity: [0, 1],
+          delay: 1300,
+          duration: 800,
+          easing: "linear",
+        });
+        // Button pop-in
+        anime({
+          targets: ".btn-primary",
+          scale: [0, 1],
+          opacity: [0, 1],
+          delay: 1800,
+          duration: 800,
+          easing: "easeOutBack",
+        });
+      });
+    </script>
+  </body>
+</html>
+{% endcomment %} {% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>CycleSync - Welcome</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="icon"
+      href="{% static 'img/favicon.ico' %}"
+      type="image/x-icon"
+    />
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"
+    ></script>
+
+    <style>
+      /* 1. Global box-sizing */
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --bg-start: #ffe6f0;
+        --bg-end: #ffffff;
+        --accent-light: rgba(255, 105, 180, 0.2);
+        --accent-dark: #c2185b;
+        --shadow-light: rgba(255, 255, 255, 0.7);
+        --shadow-dark: rgba(0, 0, 0, 0.15);
+        --font: "Segoe UI", sans-serif;
+      }
+
+      /* 2. Offset for fixed header */
+      body {
+        padding-top: 64px; /* Adjust to header height */
+        background: #f4f4f4;
+        font-family: var(--font);
+        overflow-x: hidden;
+      }
+
+      /* 3. Fixed header styling */
+      header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        padding: 1rem 2rem;
+
+        display: flex;
+        justify-content: flex-end;
+        z-index: 10;
+      }
+      nav ul {
+        display: flex;
+        gap: 1rem;
+        list-style: none;
+      }
+      nav a {
+        text-decoration: none;
+        color: var(--accent-dark);
+        font-weight: bold;
+        position: relative;
+        padding: 0.25rem 0.5rem;
+      }
+      nav a::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 0;
+        height: 2px;
+        background: var(--accent-dark);
+        transition: width 0.3s;
+      }
+      nav a:hover::after {
+        width: 100%;
+      }
+      nav a:hover: {
+        color: green !important;
+      }
+
+      /* 4. Fluid Hero Section */
+      .brush-wrap {
+        width: 100%%; /* Fit to content width */
+        height: 40vh; /* 40% of viewport height */
+        margin-top: -80px; /* Pull under header */
+        background: url("{% static 'img/brush.jpg' %}") no-repeat center;
+        background-size: 30rem; /* Always cover container */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+      .brush-wrap #logo {
+        font-size: 4rem;
+        color: var(--accent-dark);
+        font-style: italic;
+        filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.2));
+        opacity: 0;
+      }
+
+      /* 5. Main Content */
+      .content {
+        padding: 2rem;
+        text-align: center;
+        color: #333;
+      }
+      .content h2 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        opacity: 0;
+      }
+      .content p {
+        font-size: 1.1rem;
+        max-width: 600px;
+        margin: auto;
+        opacity: 0;
+      }
+      .btn-primary {
+        display: inline-block;
+        margin-top: 2rem;
+        padding: 0.75rem 2rem;
+        background: var(--accent-dark);
+        color: #fff;
+        border-radius: 2rem;
+        text-decoration: none;
+        font-size: 1rem;
+        box-shadow: 6px 6px 8px var(--shadow-dark),
+          -6px -6px 8px var(--shadow-light);
+        transform-origin: center;
+        opacity: 0;
+      }
+
+      /* 6. Bubble Animations (unchanged) */
+      .bub {
+        width: 130px;
+        height: 130px;
+        border: 1px solid white;
+        box-shadow: inset 5px -5px 10px white;
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.01);
+        backdrop-filter: blur(2px);
+        position: absolute;
+        bottom: -100px;
+        /* animation: bubble 3s ease-in infinite; */
+      }
+
+      .bub::before {
+        position: absolute;
+        content: "";
+        background-color: white;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        top: 25px;
+        right: 23px;
+        box-shadow: 0px 0px 20px white;
+      }
+
+      .bub.a {
+        left: 10%;
+        animation: bubble2 2s ease-in 1s infinite;
+      }
+
+      .bub.b {
+        left: 20%;
+        animation: bubble 1.5s ease-in 1.4s infinite;
+      }
+
+      .bub.c {
+        left: 28%;
+        animation: bubble 5s ease-in 3.8s infinite;
+      }
+
+      .bub.d {
+        left: 40%;
+        animation: bubble 1.8s ease-in 0.5s infinite;
+      }
+
+      .bub.e {
+        left: 75%;
+        animation: bubble2 2.3s ease-in 2.5s infinite;
+      }
+
+      .bub.f {
+        left: 90%;
+        animation: bubble 2.5s ease-in 3s infinite;
+      }
+
+      .bub.g {
+        left: 60%;
+        animation: bubble 2.2s ease-in 2s infinite;
+      }
+
+      .bub.k {
+        left: 50%;
+        animation: bubble 1.6s ease-in 2s infinite;
+      }
+
+      .bub.i {
+        left: 65%;
+        animation: bubble2 1.8s ease-in 2.1s infinite;
+      }
+
+      .bub.j {
+        left: 3%;
+        animation: bubble 2s ease-in 1.5s infinite;
+      }
+
+      .bub.h {
+        left: 35%;
+        animation: bubble2 3s ease-in infinite;
+      }
+
+      @keyframes bubble {
+        0% {
+          opacity: 0;
         }
-        
-        .bub.f {
-            left: 90%;
-            animation: bubble 2.5s ease-in 3s infinite;
+        10%,
+        93% {
+          opacity: 1;
         }
-        
-        .bub.g {
-            left: 60%;
-            animation: bubble 2.2s ease-in 2s infinite;
+        100% {
+          transform: translate(90px, -700px);
+          display: none;
         }
-        
-        .bub.k {
-            left: 50%;
-            animation: bubble 1.6s ease-in 2s infinite;
+      }
+
+      @keyframes bubble2 {
+        0% {
+          opacity: 0;
         }
-        
-        .bub.i {
-            left: 65%;
-            animation: bubble2 1.8s ease-in 2.1s infinite;
+        10%,
+        93% {
+          opacity: 1;
         }
-        
-        .bub.j {
-            left: 3%;
-            animation: bubble 2s ease-in 1.5s infinite;
+        100% {
+          transform: translate(-90px, -700px);
+          display: none;
         }
-        
-        .bub.h {
-            left: 35%;
-            animation: bubble2 3s ease-in infinite;
+      }
+
+      /* 7. Responsive Testimonials */
+      .testimonial {
+        display: flex;
+        flex-wrap: wrap; /* Wrap items on small screens */
+        gap: 2rem;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+      }
+      .testimonial-img {
+        width: 100%;
+        max-width: 400px;
+        height: auto;
+        object-fit: contain; /* Preserve aspect ratio */
+      }
+
+      /* 8. Media Queries */
+      @media (max-width: 768px) {
+        .brush-wrap {
+          height: 50vh;
+          background-size: cover; /* Cover on smaller screens */
+        } /* Taller hero on tablets */
+      }
+      @media (max-width: 480px) {
+        .brush-wrap {
+          height: 30vh;
+          background-size: cover;
+        } /* Shorter hero on phones */
+        .content h2 {
+          font-size: 2rem; /* Scale heading down */
         }
-        
-        @keyframes bubble {
-            0% {
-                opacity: 0;
-            }
-            10%,
-            93% {
-                opacity: 1;
-            }
-            100% {
-                transform: translate(90px, -700px);
-                display: none;
-            }
-        }
-        
-        @keyframes bubble2 {
-            0% {
-                opacity: 0;
-            }
-            10%,
-            93% {
-                opacity: 1;
-            }
-            100% {
-                transform: translate(-90px, -700px);
-                display: none;
-            }
+        .brush-wrap #logo {
+          font-size: 2rem;
+          color: var(--accent-dark);
+          font-style: italic;
+          filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.2));
+          opacity: 0;
         }
         .testimonial {
-          /* any container styles */
-          padding: 1rem;
-          text-align: center;
-          display: flex;
-          flex-direction: row;
-          align-items: center;
-
+          flex-direction: column; /* Stack testimonials vertically */
         }
-        
-        .testimonial-img {
-          width: 400px;         /* or max-width: 100%; */
-          max-height: 400px;         /* preserve aspect ratio */
-          object-fit: contain;  /* ensure full image visible */
-          display: block;       /* removes inline-gap below image */
-          margin: 0 auto;       /* center horizontally */
-        }
-        
-        
-  </style>
-</head>
-<body>
-  
-  <header>
-    <nav>
-      <ul>
-        <li><a href="{% url 'login' %}">Login</a></li>
-        <li><a href="{% url 'signup' %}">Sign Up</a></li>
-        <li><a href="#">More</a></li>
-      </ul>
-    </nav>
-  </header>
-  <section class="brush-wrap">
-    <a href="{% url 'dashboard' %}"><span id="logo">CycleSync</span></a>
-  </section>
-  <section class="content">
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <nav>
+        <ul>
+          <li><a href="{% url 'login' %}">Login</a></li>
+          <li><a href="{% url 'signup' %}">Sign Up</a></li>
+          <li><a href="#">More</a></li>
+        </ul>
+      </nav>
+    </header>
 
-    <h2>Track. Learn. Empower.</h2>
-    <p>Welcome to CycleSync, your personalized menstrual cycle tracker. Stay in tune with your body, log your symptoms, and get tailored insights every day.</p>
-    <a href="{% url 'signup' %}" class="btn-primary">Get Started</a>
-  </section>
-  
-        <span class="bub a "></span>
-        <span class="bub b "></span>
-        <span class="bub c "></span>
-        <span class="bub d"></span>
-        {% comment %}<span class="bub e"></span>
-         <span class="bub f"></span>
-        <span class="bub g"></span>
-        <span class="bub h"></span>
-        <span class="bub i"></span>
-        <span class="bub j "></span>
-        <span class="bub k"></span> {% endcomment %}
+    <section class="brush-wrap">
+      <a href="{% url 'dashboard' %}"><span id="logo">CycleSync</span></a>
+    </section>
 
-        <div class="testimonial">
-          <img
-            src="{% static 'img/girl.png' %}"
-            alt="testimonial"
-            class="testimonial-img"
-          >
-          <!-- more content here -->
-          <img src="{% static 'img/horm.png' %}" alt="" class="testimonial-img">
-        </div>
-        {% comment %} {% include 'core/dashboard.html' %} {% endcomment %}
-        <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // Logo fade-in & scale
-      anime({
-        targets: '#logo',
-        opacity: [0,1],
-        scale: [0.5,1],
-        duration: 1500,
-        easing: 'spring(1, 80, 10, 0)'
+    <section class="content">
+      <h2>Track. Learn. Empower.</h2>
+      <p>
+        Welcome to CycleSync, your personalized menstrual cycle tracker. Stay in
+        tune with your body, log your symptoms, and get tailored insights every
+        day.
+      </p>
+      <a href="{% url 'signup' %}" class="btn-primary">Get Started</a>
+    </section>
+
+    <span class="bub a"></span>
+    <span class="bub b"></span>
+    <span class="bub c"></span>
+    <span class="bub d"></span>
+
+    <div class="testimonial">
+      <img
+        src="{% static 'img/girl.png' %}"
+        alt="testimonial"
+        class="testimonial-img"
+      />
+      <img
+        src="{% static 'img/horm.png' %}"
+        alt="hormonal trends"
+        class="testimonial-img"
+      />
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        anime({
+          targets: "#logo",
+          opacity: [0, 1],
+          scale: [0.5, 1],
+          duration: 1500,
+          easing: "spring(1,80,10,0)",
+        });
+        anime({
+          targets: ".content h2",
+          translateY: [50, 0],
+          opacity: [0, 1],
+          delay: 800,
+          duration: 1000,
+          easing: "easeOutExpo",
+        });
+        anime({
+          targets: ".content p",
+          opacity: [0, 1],
+          delay: 1300,
+          duration: 800,
+          easing: "linear",
+        });
+        anime({
+          targets: ".btn-primary",
+          scale: [0, 1],
+          opacity: [0, 1],
+          delay: 1800,
+          duration: 800,
+          easing: "easeOutBack",
+        });
       });
-      // Headline slide-in
-      anime({
-        targets: '.content h2',
-        translateY: [50,0],
-        opacity: [0,1],
-        delay: 800,
-        duration: 1000,
-        easing: 'easeOutExpo'
-      });
-      // Paragraph fade-in
-      anime({
-        targets: '.content p',
-        opacity: [0,1],
-        delay: 1300,
-        duration: 800,
-        easing: 'linear'
-      });
-      // Button pop-in
-      anime({
-        targets: '.btn-primary',
-        scale: [0,1],
-        opacity: [0,1],
-        delay: 1800,
-        duration: 800,
-        easing: 'easeOutBack'
-      });
-    });
-  </script>
-</body>
-</html> 
+    </script>
+  </body>
+</html>

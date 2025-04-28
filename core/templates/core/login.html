@@ -1,6 +1,5 @@
-{% load i18n %}
+{% comment %} {% load i18n %}
 {% load static %}
-{% comment %} <link rel="stylesheet" href="{% static 'css/neumorphism.css' %}"> {% endcomment %}
 <link rel="icon" type="image/x-icon"
      href="{% static 'img/favicon.ico' %}" />
 <style>
@@ -128,4 +127,124 @@
     </div>
   </form>
 </div>
-{% endblock %}
+{% endblock %} {% endcomment %}
+{% load i18n static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>{% block title %}Login | CycleSync{% endblock %}</title>
+  <link rel="icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
+
+  <!-- 1. Ensure proper viewport scaling -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- 2. Inline responsive CSS (or move to an external stylesheet) -->
+  <style>
+    :root {
+      --bg-start:    #ffe6f0;
+      --bg-end:      #ffffff;
+      --bg-angle:    145deg;
+      --shadow-light: rgba(255,255,255,0.7);
+      --shadow-dark:  rgba(0,0,0,0.15);
+      --accent:       rgba(255,105,180,0.2);
+      /* Fluid typography base */
+      --font-base: clamp(1rem, 1.5vw, 1.25rem);
+    }
+
+    /* 3. Base styles */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: sans-serif;
+      font-size: var(--font-base);                    /* Fluid font */ :contentReference[oaicite:5]{index=5}
+      background: linear-gradient(var(--bg-angle), var(--bg-start), var(--bg-end));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;                               /* Full-screen height */
+    }
+
+    /* 4. Container: fluid up to max-width */
+    .neumo-container {
+      width: 90%;                                      /* Fluid width */ :contentReference[oaicite:6]{index=6}
+      max-width: 360px;                                /* Constrains on large screens */ :contentReference[oaicite:7]{index=7}
+      padding: 2rem;
+      border-radius: 2rem;
+      background: linear-gradient(var(--bg-angle), var(--bg-start), var(--bg-end));
+      box-shadow:
+        6px 6px 16px var(--shadow-dark),
+       -6px -6px 16px var(--shadow-light);             /* Slightly reduced shadows */ :contentReference[oaicite:8]{index=8}
+      margin: 1rem auto;
+    }
+
+    /* 5. Form inputs & buttons inherit fluid sizing */
+    .neumo-form input,
+    .neumo-btn {
+      width: 100%;
+      padding: 0.75rem;
+      margin: 0.75rem 0;
+      font-size: var(--font-base);
+      border: none;
+      border-radius: 2rem;
+      background: linear-gradient(var(--bg-angle), var(--bg-start), var(--bg-end));
+      box-shadow:
+        inset 4px 4px 6px var(--shadow-dark),
+        inset -4px -4px 6px var(--shadow-light);
+    }
+
+    /* Adjust Neumorphic shadows for small screens */
+    @media (max-width: 480px) {
+      .neumo-container {
+        box-shadow:
+          4px 4px 10px var(--shadow-dark),
+         -4px -4px 10px var(--shadow-light);
+      }
+      .neumo-form input,
+      .neumo-btn {
+        box-shadow:
+          inset 3px 3px 5px var(--shadow-dark),
+          inset -3px -3px 5px var(--shadow-light);
+      }
+    }
+
+    /* 6. Layout tweaks at tablet sizes */
+    @media (min-width: 481px) and (max-width: 768px) {
+      .neumo-container {
+        max-width: 480px;                              /* Wider container on tablets */
+      }
+    }
+
+    /* 7. Neumorphic button transitions */
+    .neumo-btn {
+      cursor: pointer;
+      transition: transform 0.1s, box-shadow 0.2s;
+    }
+    .neumo-btn:hover {
+      box-shadow:
+        2px 2px 4px var(--shadow-dark),
+       -2px -2px 4px var(--shadow-light),
+        inset 1px 1px 2px var(--accent);
+    }
+    .neumo-btn:active {
+      transform: scale(0.98);
+    }
+  </style>
+</head>
+<body>
+  <div class="neumo-container">
+    <h2 class="neumo-heading">Login</h2>
+    <form method="post" class="neumo-form">
+      {% csrf_token %}
+      {{ form.management_form }}
+      {{ form.as_p }}
+      <button type="submit" class="neumo-btn">Login</button>
+      <div style="text-align:center; margin-top:1rem;">
+        <a href="{% url 'signup' %}"><button type="button">Register here</button></a>
+        <a href="{% url 'home' %}"><button type="button">To Homepage</button></a>
+      </div>
+    </form>
+  </div>
+</body>
+</html>
+

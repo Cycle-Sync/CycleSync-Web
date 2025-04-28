@@ -1,4 +1,4 @@
-{% extends "core/base.html" %}
+ {% extends "core/base.html" %}{% comment %}
 {% load static %}
 
 {% block content %}
@@ -145,6 +145,166 @@
   };
 
   // 6. Render it!
+  myChart.setOption(option);
+</script>
+{% endblock %} {% endcomment %}
+
+{% load static %}
+
+{% block content %}
+<style>
+  /* Fluid card sizing */
+  .chart-card {
+    background: #fff4f8;
+    padding: 1rem;
+    width: 100%;            /* Fluid width */ 
+    max-width: 360px;       /* Cap on larger screens */ 
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  }
+
+  /* Container with wrapping */
+  .container {
+    display: flex;
+    flex-wrap: wrap;        /* Wrap cards on small viewports */ 
+    justify-content: center;
+    gap: 1rem;              /* Even spacing between cards */ 
+    margin: 2rem;
+  }
+
+  /* Responsive chart container */
+  #hormoneChart {
+    width: 100%;            /* Fill parent width */ 
+    height: 50vh;           /* Responsive height */ 
+    max-height: 400px;
+  }
+
+  /* Button styling preserved */
+  button {
+    background-color: #FF6EC7;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: transform 0.2s ease-in-out;
+
+  }
+  button:hover {
+    transform: scale(1.05); /* Original hover scale */ 
+  }
+
+  /* Media Queries */
+  @media (max-width: 768px) {
+    .container {
+      margin: 1rem;
+    }
+    #hormoneChart {
+      height: 40vh;         /* Slightly shorter chart */ 
+    }
+  }
+  @media (max-width: 480px) {
+    .container {
+      flex-direction: column; /* Stack cards vertically */ 
+      margin: 1rem 0;
+    }
+    #hormoneChart {
+      height: 30vh;           /* Even shorter chart */ 
+    }
+    button:hover {
+      transform: scale(1.0);  /* Reduce hover scale */ 
+    }
+  }
+</style>
+  
+  {% block blockname %}
+  <div class="chart-card">
+    <h2 class="text-xl font-bold text-center mb-4" style="color:black;">
+      🌷💗 Add your logs Today! 🫧🌸💞
+    </h2>
+    <a href="{% url 'daily_log' %}">
+      <center><button>Track Your Logs Today!</button></center>
+    </a>
+  </div>
+  {% endblock blockname %}
+    
+<section class="container">
+  <div class="chart-card">
+    <h2 class="text-xl font-bold text-center mb-4" style="color:black;">
+      Intro to Your Hormone kit🪞
+    </h2>
+    <img src="{% static 'img/hormonkit.webp' %}"
+         alt="hormone levels"
+         style="width:100%; height:250px; border-radius:0.2rem;">
+  </div>
+
+  <div class="chart-card">
+    <div id="hormoneChart"></div>
+  </div>
+
+  <div class="chart-card">
+    <h2 class="text-xl font-bold text-center mb-4" style="color:black;">
+      What to Know 🎀
+    </h2>
+    <img src="{% static 'img/reasontrack.jpeg' %}"
+         alt="cycle info"
+         style="width:100%; height:200px; border-radius:0.2rem;">
+  </div>
+</section>
+
+<!-- ECharts CDN -->
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+
+<script>
+  // Gaussian helper
+  function gaussian(x, mu, sigma) {
+    return Math.exp(-Math.pow(x - mu, 2) / (2 * sigma * sigma));
+  }
+
+  // Data for 30-day cycle
+  const days = Array.from({ length: 30 }, (_, i) => i + 1);
+  const FSH = days.map(d => 5 + 2 * gaussian(d, 1, 5) + 0.5 * Math.sin((d/30)*2*Math.PI));
+  const LH  = days.map(d => 1 + 10 * gaussian(d, 14, 1.5));
+  const Estrogen    = days.map(d => 5 + 8 * gaussian(d, 12, 3) + 2 * gaussian(d, 21, 4));
+  const Progesterone= days.map(d => 1 + 5 * gaussian(d, 21, 3));
+
+  // Initialize ECharts
+  const chartDom = document.getElementById('hormoneChart');
+  const myChart  = echarts.init(chartDom);
+
+  // Chart configuration
+  const option = {
+    title: {
+      text: 'Hormone Levels During a 30-Day Cycle',
+      left: 'center',
+      textStyle: { color: 'black', fontSize: 12, fontWeight: 'bold' }
+    },
+    tooltip: { trigger: 'axis' },
+    legend: { top: 40, data: ['FSH','LH','Estradiol','Progesterone'], textStyle: { color: 'black' } },
+    grid: { left: '5%', right: '5%', bottom: '10%', containLabel: true },
+    xAxis: {
+      type: 'category', data: days,
+      axisLine: { lineStyle: { color: 'black' } },
+      axisLabel: { color: 'black' },
+      name: 'Day of Cycle', nameTextStyle: { color: 'black' }
+    },
+    yAxis: {
+      type: 'value',
+      axisLine: { lineStyle: { color: 'black' } },
+      axisLabel: { color: 'black' },
+      name: 'Relative Level', nameTextStyle: { color: 'black' }
+    },
+    series: [
+      { name: 'FSH',         type: 'line', smooth: true, data: FSH,         lineStyle: { width: 3, color: '#FF6EC7' } },
+      { name: 'LH',          type: 'line', smooth: true, data: LH,          lineStyle: { width: 3, color: '#1ABC9C' } },
+      { name: 'Estradiol',   type: 'line', smooth: true, data: Estrogen,   lineStyle: { width: 3, color: '#9B59B6' } },
+      { name: 'Progesterone',type: 'line', smooth: true, data: Progesterone,lineStyle: { width: 3, color: '#F39C12' } }
+    ],
+    backgroundColor: 'transparent'
+  };
+
+  // Render chart
   myChart.setOption(option);
 </script>
 {% endblock %}
