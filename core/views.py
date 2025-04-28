@@ -278,7 +278,7 @@ def login_view(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            return redirect('/')
+            return redirect('dashboard')
     else:
         form = AuthenticationForm()
     return render(request, 'core/login.html', {'form': form})
