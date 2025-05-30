@@ -8,6 +8,7 @@ import Dashboard from './components/Dashboard';
 import Calendar from './components/Calendar';
 import DailyLog from './components/DailyLog';
 import Profile from './components/Profile';
+import Landing from './components/Landing';
 import { getAccessToken } from './auth';
 import { motion } from 'framer-motion';
 
@@ -29,6 +30,7 @@ function App() {
           {isAuthenticated && <Navbar setIsAuthenticated={setIsAuthenticated} />}
           <Box pt={isAuthenticated ? "80px" : 0} px={4}>
             <Routes>
+              <Route path="/" element={<Landing />} />
               <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} />} />
               <Route path="/register" element={<Register setIsAuthenticated={setIsAuthenticated} />} />
               <Route
@@ -63,7 +65,6 @@ function App() {
                   </PrivateRoute>
                 }
               />
-              <Route path="/" element={<Navigate to="/login" />} />
             </Routes>
           </Box>
         </Box>

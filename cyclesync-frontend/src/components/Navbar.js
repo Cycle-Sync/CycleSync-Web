@@ -1,6 +1,14 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Flex, Text, Button, IconButton, useColorMode, useColorModeValue } from '@chakra-ui/react';
+import {
+  Flex,
+  Text,
+  Button,
+  IconButton,
+  useColorMode,
+  useColorModeValue,
+  HamburgerIcon,
+} from '@chakra-ui/react';
 import { MoonIcon, SunIcon } from '@chakra-ui/icons';
 import { logout } from '../api';
 import { getRefreshToken, clearAuthToken } from '../auth';
@@ -46,12 +54,12 @@ function Navbar({ setIsAuthenticated }) {
         className="glow"
       >
         <Flex align="center">
-          <Link to="/dashboard">
+          <Link to="/">
             <Text fontSize="2xl" fontWeight="bold" color="brand.500">
               CycleSyNC 🫧
             </Text>
-          </Flex>
-        </Link>
+          </Link>
+        </Flex>
 
         <Flex align="center" gap={4} display={{ base: 'none', md: 'flex' }}>
           <Link to="/dashboard">
@@ -69,7 +77,7 @@ function Navbar({ setIsAuthenticated }) {
           <Button colorScheme="pink" onClick={handleLogout}>Logout</Button>
           <IconButton
             aria-label="Toggle color mode"
-            icon={colorMode}
+            icon={colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
             onClick={toggleColorMode}
             variant="ghost"
           />
@@ -77,7 +85,7 @@ function Navbar({ setIsAuthenticated }) {
 
         {/* Mobile Menu */}
         <IconButton
-          display="flexible"
+          display={{ base: 'flex', md: 'none' }}
           icon={<HamburgerIcon />}
           aria-label="Open menu"
           onClick={() => {}}
