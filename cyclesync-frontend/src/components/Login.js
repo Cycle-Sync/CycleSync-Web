@@ -51,4 +51,4 @@ function Login({ setIsAuthenticated }) {
   );
 }
 
-export default Login;
+export default Login; // Ensure default export

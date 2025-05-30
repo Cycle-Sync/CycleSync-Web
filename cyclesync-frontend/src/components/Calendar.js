@@ -43,9 +43,8 @@ function Calendar() {
           ))}
         </div>
       </div>
-      {/* Add cycle beads and legend as needed */}
     </div>
   );
 }
 
-export default Calendar;
+export default Calendar; // Ensure default export

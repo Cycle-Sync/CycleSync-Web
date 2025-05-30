@@ -49,7 +49,6 @@ function DailyLog() {
             onChange={handleChange}
           />
         </label>
-        {/* Add other fields similarly */}
         <textarea name="notes" value={entry.notes} onChange={handleChange} placeholder="Notes" />
         <button type="submit">Save</button>
       </form>
@@ -57,4 +56,4 @@ function DailyLog() {
   );
 }
 
-export default DailyLog;
+export default DailyLog; // Ensure default export

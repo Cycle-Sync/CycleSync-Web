@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { logout } from '../api'; // Import logout from api.js
-import { getRefreshToken, clearAuthToken } from '../auth'; // Import getRefreshToken and clearAuthToken from auth.js
+import { logout } from '../api';
+import { getRefreshToken, clearAuthToken } from '../auth';
 
 function Navbar({ setIsAuthenticated }) {
   const navigate = useNavigate();
@@ -31,4 +31,4 @@ function Navbar({ setIsAuthenticated }) {
   );
 }
 
-export default Navbar;
+export default Navbar; // Ensure default export
