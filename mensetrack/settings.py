@@ -4,10 +4,6 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
-
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-p7e$0gfs$628cen=&lhp5_3gv!y!mp!t!ff6v*d90ba!w$)e%^'
 
@@ -16,9 +12,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
-
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -26,14 +20,36 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    "core",
+    'rest_framework',  # Add DRF
+    'rest_framework_simplejwt',  # Add Simple JWT
+    'core',
     'django_countries',
     'django_select2',
     'formtools',
-    #'schedule',
-    #'crispy_forms',
-    #'crispy_bootstrap5',
 ]
+
+# DRF settings
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+}
+
+# Simple JWT settings
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -51,7 +67,7 @@ ROOT_URLCONF = 'mensetrack.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR, "templates"],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -65,34 +81,19 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'mensetrack.wsgi.application'
 
-
 # Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-DATABASES = {  
-'default': {  
-    'ENGINE': 'django.db.backends.postgresql',  
-    'NAME': 'neondb',  
-    'USER': 'neondb_owner',  
-    'PASSWORD': 'npg_6NwvfGIEYRi9',  
-    'HOST': 'ep-holy-hall-a4bfwrmo-pooler.us-east-1.aws.neon.tech',  
-    'PORT': '',  # Default PostgreSQL port is 5432, leave empty to use the default  
-    # 'OPTIONS': {  
-    #     'sslmode': 'require',  
-    # }  
-}  
-}  
-
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'neondb',
+        'USER': 'neondb_owner',
+        'PASSWORD': 'npg_6NwvfGIEYRi9',
+        'HOST': 'ep-holy-hall-a4bfwrmo-pooler.us-east-1.aws.neon.tech',
+        'PORT': '',  # Default PostgreSQL port
+    }
+}
 
 # Password validation
-# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -108,30 +109,24 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
-
+# Static files
 STATIC_URL = 'static/'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+STATICFILES_DIRS = [BASE_DIR / 'static']
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# CORS settings (for React frontend)
+INSTALLED_APPS += ['corsheaders']
+MIDDLEWARE.insert(0, 'corsheaders.middleware.CorsMiddleware')
+CORS_ALLOW_ALL_ORIGINS = True  # For development; restrict in production
