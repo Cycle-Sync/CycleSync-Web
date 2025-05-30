@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: 'http://localhost:8000/api/', // Update to your Django server URL
+  baseURL: 'https://supreme-space-acorn-x5r6q979w76r34w5-8000.app.github.dev/api/', // Update to your Django server URL
 });
 
 // Add token to requests

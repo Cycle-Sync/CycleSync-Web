@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { logout, getRefreshToken } from '../api';
-import { clearAuthToken } from '../auth';
+import { logout } from '../api'; // Import logout from api.js
+import { getRefreshToken, clearAuthToken } from '../auth'; // Import getRefreshToken and clearAuthToken from auth.js
 
 function Navbar({ setIsAuthenticated }) {
   const navigate = useNavigate();
