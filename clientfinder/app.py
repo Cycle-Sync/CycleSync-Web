@@ -1,5 +1,5 @@
 import streamlit as st
-from search_utils import *
+from clientfinder.search_utils import *
 
 st.set_page_config(page_title="Discussion Finder", layout="wide")
 
