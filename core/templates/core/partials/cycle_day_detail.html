@@ -1,0 +1,10 @@
+<div>
+  <h3>{{ date|date:"F j, Y" }}</h3>
+  {% if entry %}
+    <p>Cramps: {{ entry.cramps }}</p>
+    <p>Mood: {{ entry.mood }}</p>
+    <p>Notes: {{ entry.notes|default:"None" }}</p>
+  {% else %}
+    <p>No log for this day.</p>
+  {% endif %}
+</div>
