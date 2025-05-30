@@ -1,12 +1,25 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { login } from '../api';
-import { setAuthToken } from '../auth';
+import React, { useState } from 'react";
+import {
+  Box,
+  Button,
+  FormControl,
+  FormLabel,
+  Input,
+  VStack,
+  Heading,
+  useToast,
+  useColorModeValue,
+} from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
+import { login } from "../api";
+import { setAuthToken } from "../auth";
+import { motion } from "framer-motion";
 
 function Login({ setIsAuthenticated }) {
-  const [formData, setFormData] = useState({ username: '', password: '' });
-  const [error, setError] = useState('');
+  const [formData, setFormData] = useState({ username: "", password: "" });
+  const toast = useToast();
   const navigate = useNavigate();
+  const bg = useColorModeValue("white", "gray.700");
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -18,37 +31,80 @@ function Login({ setIsAuthenticated }) {
       const response = await login(formData);
       setAuthToken(response.data.access, response.data.refresh);
       setIsAuthenticated(true);
-      navigate('/dashboard');
+      navigate("/dashboard");
+      toast({
+        title: "Login Successful",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
     } catch (err) {
-      setError('Invalid credentials');
+      toast({
+        title: "Login Failed",
+        description: "Invalid credentials",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
 
   return (
-    <div>
-      <h2>Login</h2>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          name="username"
-          value={formData.username}
-          onChange={handleChange}
-          placeholder="Username"
-          required
-        />
-        <input
-          type="password"
-          name="password"
-          value={formData.password}
-          onChange={handleChange}
-          placeholder="Password"
-          required
-        />
-        <button type="submit">Login</button>
-      </form>
-    </div>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <Box
+        maxW="md"
+        mx="auto"
+        mt={10}
+        p={8}
+        bg={bg}
+        borderRadius="lg"
+        boxShadow="lg"
+        className="glow"
+      >
+        <Heading mb={6} textAlign="center" color="brand.500">
+          Login
+        </Heading>
+        <form onSubmit={handleSubmit}>
+          <VStack spacing={4}>
+            <FormControl>
+              <FormLabel>Username</FormLabel>
+              <Input
+                type="text"
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
+                placeholder="Enter username"
+                focusBorderColor="brand.500"
+              />
+            </FormControl>
+            <FormControl>
+              <FormLabel>Password</FormLabel>
+              <Input
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="Enter password"
+                focusBorderColor="brand.500"
+              />
+            </FormControl>
+            <Button
+              type="submit"
+              colorScheme="pink"
+              width="full"
+              _hover={{ bg: "brand.600" }}
+            >
+              Login
+            </Button>
+          </VStack>
+        </form>
+      </Box>
+    </motion.div>
   );
 }
 
-export default Login; // Ensure default export
+export default Login;
