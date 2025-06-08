@@ -64,6 +64,6 @@ export function logoutUser() {
 // ─── 4) FETCH CURRENT USER: GET /api/users/me/ ───────────────────────────────────
 export async function fetchCurrentUser(): Promise<UserData> {
   // Be sure you add a “/api/users/me/” URL on the Django side (see below).
-  const response = await api.get<UserData>("/users/me/");
+  const response = await api.get<UserData>("/profiles/me/");
   return response.data;
 }
