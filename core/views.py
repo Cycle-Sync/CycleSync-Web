@@ -40,7 +40,6 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
                 "user": {
                     "id": self.user.id,
                     "username": self.user.username,
-                    "role": self.user.role,
                 },
             }
         except ValidationError:
