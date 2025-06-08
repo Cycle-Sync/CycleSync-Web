@@ -8,7 +8,8 @@ router.register(r'daily-entries', DailyEntryViewSet, basename='dailyentry')
 router.register(r'cycles', CycleViewSet, basename='cycle')
 router.register(r'predictions', PredictionViewSet, basename='prediction')
 router.register(r'users', UserViewSet)
-
+#condition viewset
+router.register(r'conditions', ConditionViewSet, basename='condition')
 urlpatterns = [
     path('', include(router.urls)),
     path('auth/register/', RegisterView.as_view(), name='auth-register'),
