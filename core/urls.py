@@ -1,19 +1,29 @@
-from django.contrib import admin
 from django.urls import path, include
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from core.views import *
 from rest_framework.routers import DefaultRouter
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from .views import (
+    ProfileViewSet,
+    DailyEntryViewSet,
+    CycleViewSet,
+    PredictionViewSet,
+    CalendarView,
+    DashboardView,
+    RegisterView,
+)
 
 router = DefaultRouter()
-# Register your viewsets here if you have any
+router.register(r'profiles', ProfileViewSet, basename='profile')
+router.register(r'daily-entries', DailyEntryViewSet, basename='dailyentry')
+router.register(r'cycles', CycleViewSet, basename='cycle')
+router.register(r'predictions', PredictionViewSet, basename='prediction')
+
 urlpatterns = [
-    path('register/', RegisterView.as_view(), name='register'),
-    path('auth/token/login/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('auth/token/verify/', TokenVerifyView.as_view(), name='token_verify'),#for api users
-    path('profile/', ProfileView.as_view(), name='profile'),
-    path('daily-entry/', DailyEntryView.as_view(), name='daily_entry'),
+    path('', include(router.urls)),
+    path('auth/register/', RegisterView.as_view(), name='auth-register'),
+    path('auth/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+
+    # custom endpoints
     path('calendar/', CalendarView.as_view(), name='calendar'),
     path('dashboard/', DashboardView.as_view(), name='dashboard'),
-    path('', include(router.urls)),
 ]
