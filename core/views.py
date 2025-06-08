@@ -11,6 +11,69 @@ from datetime import date, timedelta
 import calendar
 import math
 
+
+# core/views.py
+
+from rest_framework import viewsets, status, generics, permissions
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.response import Response
+from django.contrib.auth import get_user_model
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
+from django.core.cache import cache
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+
+from .models import Note
+from .serializers import UserSerializer, NoteSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.db import IntegrityError
+from django.core.exceptions import ValidationError
+from .api.responses import error_response
+from rest_framework.exceptions import PermissionDenied
+# Import our custom throttle
+from .throttles import LoginRateThrottle
+# Import Celery task
+from .tasks import mark_note_as_old
+
+User = get_user_model()
+
+CACHE_TTL = 60 * 5  # cache for 5 minutes
+
+
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    permission_classes = [permissions.AllowAny]
+
+    def validate(self, attrs):
+        try:
+            data = super().validate(attrs)
+            return {
+                "tokens": {"refresh": data["refresh"], "access": data["access"]},
+                "user": {
+                    "id": self.user.id,
+                    "username": self.user.username,
+                    "role": self.user.role,
+                },
+            }
+        except ValidationError:
+            return error_response(
+                message="Authentication failed",
+                code=status.HTTP_401_UNAUTHORIZED,
+                details={"error": "Invalid credentials"},
+            )
+
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        token["user_id"] = user.id
+        return token
+
+
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer
+    #throttle_classes = [LoginRateThrottle]
 # Authentication Views
 class RegisterView(APIView):
     permission_classes = [AllowAny]
@@ -43,41 +106,28 @@ class RegisterView(APIView):
             'user': UserSerializer(user).data
         }, status=status.HTTP_201_CREATED)
 
-class LoginView(APIView):
-    permission_classes = [AllowAny]
 
-    def post(self, request):
-        username = request.data.get('username')
-        password = request.data.get('password')
-        user = authenticate(username=username, password=password)
-        if user:
-            refresh = RefreshToken.for_user(user)
-            return Response({
-                'refresh': str(refresh),
-                'access': str(refresh.access_token),
-                'user': UserSerializer(user).data
-            })
-        return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
-
-class LogoutView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request):
-        try:
-            refresh_token = request.data.get('refresh')
-            token = RefreshToken(refresh_token)
-            token.blacklist()
-            return Response(status=status.HTTP_205_RESET_CONTENT)
-        except Exception:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-# Profile View
-class ProfileView(generics.RetrieveUpdateAPIView):
+#for profile
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
     serializer_class = ProfileSerializer
-    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAdminUser]
 
-    def get_object(self):
-        return Profile.objects.get(user=self.request.user)
+    @action(detail=False, methods=["get"], permission_classes=[IsAuthenticated])
+    def me(self, request):
+        serializer = self.get_serializer(request.user)
+        return Response(serializer.data)
+
+    def handle_exception(self, exc):
+        if isinstance(exc, IntegrityError):
+            return error_response(
+                message="User creation failed",
+                code=status.HTTP_400_BAD_REQUEST,
+                details={"error": "Username already exists"},
+            )
+        return super().handle_exception(exc)
+
 
 # Daily Entry View
 class DailyEntryView(APIView):
