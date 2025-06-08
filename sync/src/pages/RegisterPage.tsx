@@ -15,11 +15,25 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import CircularProgress from "@/components/customized/progress/progress-10"; // or wherever you place it
-
+import CircularProgress from "@/components/customized/progress/progress-10";
 import api from "@/api/api";
+
+// minimal list of country codes/names; you can expand or import from a JSON
+const COUNTRIES = [
+  { code: "US", name: "United States" },
+  { code: "FR", name: "France" },
+  { code: "UG", name: "Uganda" },
+  { code: "IN", name: "India" },
+  // …add more as needed
+];
 
 interface Condition {
   id: number;
@@ -31,51 +45,72 @@ export default function RegisterPage() {
   const location = useLocation();
   const from = (location.state as any)?.from?.pathname || "/app/dashboard";
 
-  // Multi-step form state
   const [step, setStep] = useState(0);
   const totalSteps = 5;
   const progressValue = Math.round((step / (totalSteps - 1)) * 100);
 
-  // Form fields
+  // form fields
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
   const [country, setCountry] = useState("");
   const [lastOvulation, setLastOvulation] = useState("");
-  const [cycleType, setCycleType] = useState<"regular"|"irregular"|"unknown">("unknown");
-  const [cycleLength, setCycleLength] = useState<number>(28);
-  const [periodLength, setPeriodLength] = useState<number>(5);
+  const [cycleType, setCycleType] =
+    useState<"regular" | "irregular" | "unknown">("unknown");
+  const [cycleLength, setCycleLength] = useState(28);
+  const [periodLength, setPeriodLength] = useState(5);
   const [preferences, setPreferences] = useState<string[]>([]);
   const [medicalConditions, setMedicalConditions] = useState<number[]>([]);
   const [conditionsList, setConditionsList] = useState<Condition[]>([]);
+  const [errors, setErrors] = useState<string>("");
+
   const [loading, setLoading] = useState(false);
 
-  // Fetch available conditions for step 3
+  // load medical conditions
   useEffect(() => {
-    async function loadConditions() {
-      try {
-        const resp = await api.get<Condition[]>("/conditions/");
-        setConditionsList(resp.data);
-      } catch {
-        // ignore
-      }
-    }
-    loadConditions();
+    api
+      .get<Condition[]>("/conditions/")
+      .then((resp) => setConditionsList(resp.data))
+      .catch(() => {});
   }, []);
 
-  function next() {
-    if (step < totalSteps - 1) setStep(step + 1);
-  }
-  function prev() {
-    if (step > 0) setStep(step - 1);
-  }
+  // validation per step
+  const validateStep = (): boolean => {
+    switch (step) {
+      case 0:
+        return username.trim().length >= 3 && password.length >= 6;
+      case 1:
+        return !!dateOfBirth && !!country;
+      case 2:
+        return (
+          !!lastOvulation &&
+          cycleLength >= 21 &&
+          cycleLength <= 40 &&
+          periodLength >= 3 &&
+          periodLength <= 10
+        );
+      case 3:
+        return preferences.length > 0;
+      default:
+        return true;
+    }
+  };
 
-  async function handleSubmit() {
-    if (!username || !password) {
-      toast.error("Username & password are required.");
-      setStep(0);
+  const next = () => {
+    if (!validateStep()) {
+      setErrors("Please complete all required fields correctly.");
       return;
     }
+    setErrors("");
+    setStep((s) => Math.min(s + 1, totalSteps - 1));
+  };
+
+  const prev = () => {
+    setErrors("");
+    setStep((s) => Math.max(s - 1, 0));
+  };
+
+  const handleSubmit = async () => {
     setLoading(true);
     try {
       await api.post("/auth/register/", {
@@ -93,18 +128,20 @@ export default function RegisterPage() {
       toast.success("Registration successful!");
       navigate(from, { replace: true });
     } catch (err: any) {
-      toast.error(err.response?.data?.error?.message || "Registration failed.");
+      toast.error(
+        err.response?.data?.error?.message || "Registration failed."
+      );
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
       <Card className="w-full max-w-md">
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-2xl">Sign Up</CardTitle>
+            <CardTitle className="text-2xl">Create your account</CardTitle>
             <CircularProgress
               value={progressValue}
               size={60}
@@ -114,22 +151,26 @@ export default function RegisterPage() {
               progressClassName="stroke-blue-600"
             />
           </div>
-          <CardDescription>
+          <CardDescription className="mt-1">
             Step {step + 1} of {totalSteps}
           </CardDescription>
         </CardHeader>
 
-        <CardContent>
+        <CardContent className="space-y-6">
+          {errors && (
+            <p className="text-sm text-red-600 dark:text-red-400">{errors}</p>
+          )}
+
           {step === 0 && (
             <div className="space-y-4">
               <Input
-                placeholder="Username"
+                placeholder="Username (min 3 chars)"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
               />
               <Input
                 type="password"
-                placeholder="Password"
+                placeholder="Password (min 6 chars)"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
@@ -138,7 +179,7 @@ export default function RegisterPage() {
 
           {step === 1 && (
             <div className="space-y-4">
-              <label className="block">
+              <label className="block text-sm">
                 <span>Date of Birth</span>
                 <Input
                   type="date"
@@ -147,20 +188,27 @@ export default function RegisterPage() {
                 />
               </label>
 
-              <label className="block">
-                <span>Country Code</span>
-                <Input
-                  placeholder="e.g. US, FR, UG"
-                  value={country}
-                  onChange={(e) => setCountry(e.target.value.toUpperCase())}
-                />
+              <label className="block text-sm">
+                <span>Country</span>
+                <Select value={country} onValueChange={setCountry}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select your country" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {COUNTRIES.map((c) => (
+                      <SelectItem key={c.code} value={c.code}>
+                        {c.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </label>
             </div>
           )}
 
           {step === 2 && (
             <div className="space-y-4">
-              <label className="block">
+              <label className="block text-sm">
                 <span>Last Ovulation</span>
                 <Input
                   type="date"
@@ -168,13 +216,12 @@ export default function RegisterPage() {
                   onChange={(e) => setLastOvulation(e.target.value)}
                 />
               </label>
-
               <div className="flex space-x-2">
                 <Select
                   value={cycleType}
                   onValueChange={(v) => setCycleType(v as any)}
                 >
-                  <SelectTrigger className="w-full">
+                  <SelectTrigger className="flex-1">
                     <SelectValue placeholder="Cycle Type" />
                   </SelectTrigger>
                   <SelectContent>
@@ -186,6 +233,7 @@ export default function RegisterPage() {
                 <Input
                   type="number"
                   min={21}
+                  max={40}
                   placeholder="Cycle Length"
                   value={cycleLength}
                   onChange={(e) => setCycleLength(+e.target.value)}
@@ -193,6 +241,7 @@ export default function RegisterPage() {
                 <Input
                   type="number"
                   min={3}
+                  max={10}
                   placeholder="Period Length"
                   value={periodLength}
                   onChange={(e) => setPeriodLength(+e.target.value)}
@@ -202,60 +251,95 @@ export default function RegisterPage() {
           )}
 
           {step === 3 && (
-            <div className="space-y-4">
+            <div className="space-y-4 text-sm">
               <div>
-                <span className="block mb-1">Preferences</span>
-                {["cycle", "symptoms", "pregnancy", "diet", "hormone"].map((opt) => (
-                  <label key={opt} className="flex items-center space-x-2">
-                    <Checkbox
-                      checked={preferences.includes(opt)}
-                      onCheckedChange={(checked) => {
-                        setPreferences((prev) =>
-                          checked
-                            ? [...prev, opt]
-                            : prev.filter((p) => p !== opt)
-                        );
-                      }}
-                    />
-                    <span className="capitalize">{opt}</span>
-                  </label>
-                ))}
+                <p className="font-medium mb-2">Preferences</p>
+                <div className="grid grid-cols-2 gap-2">
+                  {["cycle", "symptoms", "pregnancy", "diet", "hormone"].map(
+                    (opt) => (
+                      <label
+                        key={opt}
+                        className="flex items-center space-x-2"
+                      >
+                        <Checkbox
+                          checked={preferences.includes(opt)}
+                          onCheckedChange={(chk) => {
+                            setPreferences((prev) =>
+                              chk
+                                ? [...prev, opt]
+                                : prev.filter((p) => p !== opt)
+                            );
+                          }}
+                        />
+                        <span className="capitalize">{opt}</span>
+                      </label>
+                    )
+                  )}
+                </div>
               </div>
 
               <div>
-                <span className="block mb-1">Medical Conditions</span>
-                {conditionsList.map((c) => (
-                  <label key={c.id} className="flex items-center space-x-2">
-                    <Checkbox
-                      checked={medicalConditions.includes(c.id)}
-                      onCheckedChange={(checked) => {
-                        setMedicalConditions((prev) =>
-                          checked
-                            ? [...prev, c.id]
-                            : prev.filter((id) => id !== c.id)
-                        );
-                      }}
-                    />
-                    <span>{c.name}</span>
-                  </label>
-                ))}
+                <p className="font-medium mb-2">Medical Conditions</p>
+                <div className="grid grid-cols-2 gap-2">
+                  {conditionsList.map((c) => (
+                    <label
+                      key={c.id}
+                      className="flex items-center space-x-2 text-sm"
+                    >
+                      <Checkbox
+                        checked={medicalConditions.includes(c.id)}
+                        onCheckedChange={(chk) => {
+                          setMedicalConditions((prev) =>
+                            chk
+                              ? [...prev, c.id]
+                              : prev.filter((id) => id !== c.id)
+                          );
+                        }}
+                      />
+                      <span>{c.name}</span>
+                    </label>
+                  ))}
+                </div>
               </div>
             </div>
           )}
 
           {step === 4 && (
-            <div className="space-y-2">
+            <div className="space-y-2 text-sm">
               <p className="font-semibold">Review & Submit</p>
-              <ul className="list-disc list-inside space-y-1 text-sm text-gray-700">
-                <li><strong>Username:</strong> {username}</li>
-                <li><strong>DOB:</strong> {dateOfBirth}</li>
-                <li><strong>Country:</strong> {country}</li>
-                <li><strong>Last Ovulation:</strong> {lastOvulation}</li>
-                <li><strong>Cycle Type:</strong> {cycleType}</li>
-                <li><strong>Cycle Length:</strong> {cycleLength} days</li>
-                <li><strong>Period Length:</strong> {periodLength} days</li>
-                <li><strong>Preferences:</strong> {preferences.join(", ")}</li>
-                <li><strong>Conditions:</strong> {medicalConditions.join(", ") || "None"}</li>
+              <ul className="list-disc list-inside space-y-1">
+                <li>
+                  <strong>Username:</strong> {username}
+                </li>
+                <li>
+                  <strong>DOB:</strong> {dateOfBirth}
+                </li>
+                <li>
+                  <strong>Country:</strong>{" "}
+                  {COUNTRIES.find((c) => c.code === country)?.name ||
+                    country}
+                </li>
+                <li>
+                  <strong>Last Ovulation:</strong> {lastOvulation}
+                </li>
+                <li>
+                  <strong>Cycle Type:</strong> {cycleType}
+                </li>
+                <li>
+                  <strong>Cycle Length:</strong> {cycleLength} days
+                </li>
+                <li>
+                  <strong>Period Length:</strong> {periodLength} days
+                </li>
+                <li>
+                  <strong>Preferences:</strong> {preferences.join(", ")}
+                </li>
+                <li>
+                  <strong>Conditions:</strong>{" "}
+                  {medicalConditions.length
+                    ? medicalConditions.join(", ")
+                    : "None"}
+                </li>
               </ul>
             </div>
           )}
@@ -270,7 +354,7 @@ export default function RegisterPage() {
             Back
           </Button>
           {step < totalSteps - 1 ? (
-            <Button onClick={next} disabled={loading}>
+            <Button onClick={next} disabled={!validateStep() || loading}>
               Next
             </Button>
           ) : (
