@@ -1,0 +1,42 @@
+# Menstrual Cycle Tracker
+
+Welcome to the Menstrual Cycle Tracker project! This application helps users monitor and predict their menstrual cycles, track symptoms, moods, and other health-related data, empowering them to understand their body better.
+
+---
+
+## Features
+
+- **Cycle Tracking:** Log menstrual start and end dates, and predict upcoming periods.
+- **Symptom Logging:** Track symptoms such as cramps, headaches, and emotional changes.
+- **Ovulation & Fertility Predictions:** Estimate fertile days and ovulation windows.
+- **Mood & Health Journaling:** Record daily mood, activity, and health notes.
+- **Reminders & Notifications:** Get alerts for upcoming periods or ovulation days.
+- **Data Visualization:** View charts and reports of cycle patterns, symptoms, and moods.
+- **User Authentication:** Secure login/signup for personalized experience.
+
+---
+
+## Technologies Used
+
+- Frontend: [React/Vue/Angular] (Adjust based on your choice)
+- Backend: [Node.js/Express, Django, Flask, etc.]
+- Database: [Firebase, MongoDB, PostgreSQL, etc.]
+- Authentication: [Firebase Auth, OAuth, JWT, etc.]
+- Other tools: [Chart.js, D3.js, etc.]
+
+---
+
+## Installation
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) v14+ (if using Node.js)
+- [MongoDB](https://www.mongodb.com/) or your preferred database
+- [Yarn](https://yarnpkg.com/) or npm
+
+### Setup Instructions
+
+1. Clone the repository:
+
+```bash  
+git clone ....
