@@ -15,7 +15,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from .models import Profile, DailyEntry, Cycle, Prediction
+from .models import Profile, DailyEntry, Cycle, Prediction, Condition
+from .serializers import ConditionSerializer
 from .serializers import (
     UserSerializer,
     ProfileSerializer,
@@ -262,3 +263,17 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         return User.objects.all().order_by('username')
+
+#for fetching conditions registered in the Condition model
+class ConditionViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    /api/conditions/       [GET]
+    /api/conditions/{pk}/  [GET]
+    """
+    queryset = Condition.objects.all()
+    serializer_class = ConditionSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        return Condition.objects.all().order_by('name')
