@@ -5,7 +5,8 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('core.urls')),
+    path('api/', include('core.urls')),
+    path('api-auth/', include('rest_framework.urls')),  # Optional for browsable API
 ]
 #save stataic  and medai
 
