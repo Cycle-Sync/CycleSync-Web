@@ -4,6 +4,10 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django_countries.fields import CountryField
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.core.exceptions import ValidationError
+from django.conf import settings
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -153,11 +157,11 @@ class Prediction(models.Model):
     predicted_start = models.DateField()
     confidence = models.FloatField(null=True, blank=True)
     actual_start = models.DateField(null=True, blank=True)
-    
-    def accuracy(self):
+
+   def accuracy(self):
         if self.actual_start:
-            return (self.predicted_start - self.actual_start).days
-        return None
-    
+            return abs((self.predicted_start - self.actual_start).days)
+        return None 
+       
     def __str__(self):
         return f"{self.user.username}'s prediction for {self.predicted_start}"
