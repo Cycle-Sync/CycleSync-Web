@@ -1,27 +1,18 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status, generics
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
-from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from .models import Profile, DailyEntry, Cycle
 from .serializers import UserSerializer, ProfileSerializer, DailyEntrySerializer, CycleSerializer
 from datetime import date, timedelta
 import calendar
 import math
-
-
-# core/views.py
-
 from rest_framework import viewsets, status, generics, permissions
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
-from django.utils.decorators import method_decorator
+from django.utils.decorators import method_decorator, action
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from rest_framework_simplejwt.tokens import RefreshToken
 from django.db import IntegrityError
 from django.core.exceptions import ValidationError
 from .api.responses import error_response
