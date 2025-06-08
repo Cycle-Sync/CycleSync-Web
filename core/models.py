@@ -158,7 +158,7 @@ class Prediction(models.Model):
     confidence = models.FloatField(null=True, blank=True)
     actual_start = models.DateField(null=True, blank=True)
 
-   def accuracy(self):
+    def accuracy(self):
         if self.actual_start:
             return abs((self.predicted_start - self.actual_start).days)
         return None 
