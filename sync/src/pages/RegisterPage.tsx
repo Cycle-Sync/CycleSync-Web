@@ -15,25 +15,11 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import CircularProgress from "@/components/customized/progress/progress-10";
-import api from "@/api/api";
+import { Country, CountryDropdown } from "@/components/ui/country-dropdown";
 
-// minimal list of country codes/names; you can expand or import from a JSON
-const COUNTRIES = [
-  { code: "US", name: "United States" },
-  { code: "FR", name: "France" },
-  { code: "UG", name: "Uganda" },
-  { code: "IN", name: "India" },
-  // …add more as needed
-];
+import api from "@/api/api";
 
 interface Condition {
   id: number;
@@ -53,7 +39,7 @@ export default function RegisterPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
-  const [country, setCountry] = useState("");
+  const [country, setCountry] = useState<Country | null>(null);
   const [lastOvulation, setLastOvulation] = useState("");
   const [cycleType, setCycleType] =
     useState<"regular" | "irregular" | "unknown">("unknown");
@@ -62,7 +48,7 @@ export default function RegisterPage() {
   const [preferences, setPreferences] = useState<string[]>([]);
   const [medicalConditions, setMedicalConditions] = useState<number[]>([]);
   const [conditionsList, setConditionsList] = useState<Condition[]>([]);
-  const [errors, setErrors] = useState<string>("");
+  const [errorMsg, setErrorMsg] = useState<string>("");
 
   const [loading, setLoading] = useState(false);
 
@@ -80,7 +66,7 @@ export default function RegisterPage() {
       case 0:
         return username.trim().length >= 3 && password.length >= 6;
       case 1:
-        return !!dateOfBirth && !!country;
+        return !!dateOfBirth && country !== null;
       case 2:
         return (
           !!lastOvulation &&
@@ -98,15 +84,15 @@ export default function RegisterPage() {
 
   const next = () => {
     if (!validateStep()) {
-      setErrors("Please complete all required fields correctly.");
+      setErrorMsg("Please complete all required fields correctly.");
       return;
     }
-    setErrors("");
+    setErrorMsg("");
     setStep((s) => Math.min(s + 1, totalSteps - 1));
   };
 
   const prev = () => {
-    setErrors("");
+    setErrorMsg("");
     setStep((s) => Math.max(s - 1, 0));
   };
 
@@ -117,7 +103,7 @@ export default function RegisterPage() {
         username,
         password,
         date_of_birth: dateOfBirth,
-        country,
+        country: country!.alpha3,
         last_ovulation: lastOvulation,
         cycle_type: cycleType,
         cycle_length: cycleLength,
@@ -157,8 +143,10 @@ export default function RegisterPage() {
         </CardHeader>
 
         <CardContent className="space-y-6">
-          {errors && (
-            <p className="text-sm text-red-600 dark:text-red-400">{errors}</p>
+          {errorMsg && (
+            <p className="text-sm text-red-600 dark:text-red-400">
+              {errorMsg}
+            </p>
           )}
 
           {step === 0 && (
@@ -188,21 +176,14 @@ export default function RegisterPage() {
                 />
               </label>
 
-              <label className="block text-sm">
-                <span>Country</span>
-                <Select value={country} onValueChange={setCountry}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select your country" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {COUNTRIES.map((c) => (
-                      <SelectItem key={c.code} value={c.code}>
-                        {c.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </label>
+              <div className="space-y-1">
+                <span className="block text-sm">Country</span>
+                <CountryDropdown
+                  placeholder="Select your country"
+                  defaultValue={country}
+                  onChange={(c) => setCountry(c)}
+                />
+              </div>
             </div>
           )}
 
@@ -217,19 +198,6 @@ export default function RegisterPage() {
                 />
               </label>
               <div className="flex space-x-2">
-                <Select
-                  value={cycleType}
-                  onValueChange={(v) => setCycleType(v as any)}
-                >
-                  <SelectTrigger className="flex-1">
-                    <SelectValue placeholder="Cycle Type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="regular">Regular</SelectItem>
-                    <SelectItem value="irregular">Irregular</SelectItem>
-                    <SelectItem value="unknown">Unknown</SelectItem>
-                  </SelectContent>
-                </Select>
                 <Input
                   type="number"
                   min={21}
@@ -263,13 +231,11 @@ export default function RegisterPage() {
                       >
                         <Checkbox
                           checked={preferences.includes(opt)}
-                          onCheckedChange={(chk) => {
+                          onCheckedChange={(chk) =>
                             setPreferences((prev) =>
-                              chk
-                                ? [...prev, opt]
-                                : prev.filter((p) => p !== opt)
-                            );
-                          }}
+                              chk ? [...prev, opt] : prev.filter((p) => p !== opt)
+                            )
+                          }
                         />
                         <span className="capitalize">{opt}</span>
                       </label>
@@ -288,13 +254,13 @@ export default function RegisterPage() {
                     >
                       <Checkbox
                         checked={medicalConditions.includes(c.id)}
-                        onCheckedChange={(chk) => {
+                        onCheckedChange={(chk) =>
                           setMedicalConditions((prev) =>
                             chk
                               ? [...prev, c.id]
                               : prev.filter((id) => id !== c.id)
-                          );
-                        }}
+                          )
+                        }
                       />
                       <span>{c.name}</span>
                     </label>
@@ -315,15 +281,10 @@ export default function RegisterPage() {
                   <strong>DOB:</strong> {dateOfBirth}
                 </li>
                 <li>
-                  <strong>Country:</strong>{" "}
-                  {COUNTRIES.find((c) => c.code === country)?.name ||
-                    country}
+                  <strong>Country:</strong> {country?.name} {country?.emoji}
                 </li>
                 <li>
                   <strong>Last Ovulation:</strong> {lastOvulation}
-                </li>
-                <li>
-                  <strong>Cycle Type:</strong> {cycleType}
                 </li>
                 <li>
                   <strong>Cycle Length:</strong> {cycleLength} days
