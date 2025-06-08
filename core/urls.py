@@ -16,6 +16,7 @@ router.register(r'profiles', ProfileViewSet, basename='profile')
 router.register(r'daily-entries', DailyEntryViewSet, basename='dailyentry')
 router.register(r'cycles', CycleViewSet, basename='cycle')
 router.register(r'predictions', PredictionViewSet, basename='prediction')
+router.register(r'users', UserViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
