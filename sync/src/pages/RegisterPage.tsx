@@ -149,6 +149,7 @@ export default function RegisterPage() {
             </p>
           )}
 
+          {/* Step 0: Credentials */}
           {step === 0 && (
             <div className="space-y-4">
               <Input
@@ -165,6 +166,7 @@ export default function RegisterPage() {
             </div>
           )}
 
+          {/* Step 1: DOB + Country */}
           {step === 1 && (
             <div className="space-y-4">
               <label className="block text-sm">
@@ -179,14 +181,15 @@ export default function RegisterPage() {
               <div className="space-y-1">
                 <span className="block text-sm">Country</span>
                 <CountryDropdown
-                  placeholder="Select your country"
-                  defaultValue={country}
+                  placeholder="Select a country"
+                  defaultValue={country?.alpha3}
                   onChange={(c) => setCountry(c)}
                 />
               </div>
             </div>
           )}
 
+          {/* Step 2: Cycle Info */}
           {step === 2 && (
             <div className="space-y-4">
               <label className="block text-sm">
@@ -218,6 +221,7 @@ export default function RegisterPage() {
             </div>
           )}
 
+          {/* Step 3: Preferences & Conditions */}
           {step === 3 && (
             <div className="space-y-4 text-sm">
               <div>
@@ -270,6 +274,7 @@ export default function RegisterPage() {
             </div>
           )}
 
+          {/* Step 4: Review */}
           {step === 4 && (
             <div className="space-y-2 text-sm">
               <p className="font-semibold">Review & Submit</p>
