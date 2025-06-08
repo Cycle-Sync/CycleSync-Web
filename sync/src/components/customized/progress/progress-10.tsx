@@ -1,12 +1,11 @@
+// src/components/customized/progress/CircularProgress.tsx
 "use client";
 
 import * as React from "react";
-
-import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
 
-interface CircularProgressProps {
-  value: number;
+export interface CircularProgressProps {
+  value: number; // 0–100
   renderLabel?: (progress: number) => number | string;
   size?: number;
   strokeWidth?: number;
@@ -19,7 +18,7 @@ interface CircularProgressProps {
   showLabel?: boolean;
 }
 
-const CircularProgress = ({
+export function CircularProgress({
   value,
   renderLabel,
   className,
@@ -31,27 +30,20 @@ const CircularProgress = ({
   strokeWidth,
   circleStrokeWidth = 10,
   progressStrokeWidth = 10,
-}: CircularProgressProps) => {
-  const radius = size / 2 - 10;
-  const circumference = Math.ceil(3.14 * radius * 2);
-  const percentage = Math.ceil(circumference * ((100 - value) / 100));
-
-  const viewBox = `-${size * 0.125} -${size * 0.125} ${size * 1.25} ${
-    size * 1.25
-  }`;
+}: CircularProgressProps) {
+  const radius = size / 2 - circleStrokeWidth / 2;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference * (1 - value / 100);
 
   return (
     <div className="relative">
       <svg
         width={size}
         height={size}
-        viewBox={viewBox}
-        version="1.1"
-        xmlns="http://www.w3.org/2000/svg"
-        style={{ transform: "rotate(-90deg)" }}
+        viewBox={`0 0 ${size} ${size}`}
         className="relative"
+        style={{ transform: "rotate(-90deg)" }}
       >
-        {/* Base Circle */}
         <circle
           r={radius}
           cx={size / 2}
@@ -59,71 +51,31 @@ const CircularProgress = ({
           fill="transparent"
           strokeWidth={strokeWidth ?? circleStrokeWidth}
           strokeDasharray={circumference}
-          strokeDashoffset="0"
+          strokeDashoffset={0}
           className={cn("stroke-primary/25", className)}
         />
-
-        {/* Progress */}
         <circle
           r={radius}
           cx={size / 2}
           cy={size / 2}
+          fill="transparent"
           strokeWidth={strokeWidth ?? progressStrokeWidth}
           strokeLinecap={shape}
-          strokeDashoffset={percentage}
-          fill="transparent"
           strokeDasharray={circumference}
+          strokeDashoffset={offset}
           className={cn("stroke-primary", progressClassName)}
         />
       </svg>
       {showLabel && (
         <div
           className={cn(
-            "absolute inset-0 flex items-center justify-center text-md",
+            "absolute inset-0 flex items-center justify-center",
             labelClassName
           )}
         >
-          {renderLabel ? renderLabel(value) : value}
+          {renderLabel ? renderLabel(value) : `${value}%`}
         </div>
       )}
-    </div>
-  );
-};
-
-export default function CircularProgressColorDemo() {
-  const [progress, setProgress] = React.useState([13]);
-
-  return (
-    <div className="max-w-xs mx-auto w-full flex flex-col items-center">
-      <div className="flex items-center gap-1">
-        <CircularProgress
-          value={progress[0]}
-          size={120}
-          strokeWidth={10}
-          showLabel
-          labelClassName="text-xl font-bold"
-          renderLabel={(progress) => `${progress}%`}
-          className="stroke-indigo-500/25"
-          progressClassName="stroke-indigo-600"
-        />
-        <CircularProgress
-          value={progress[0]}
-          size={120}
-          strokeWidth={10}
-          showLabel
-          labelClassName="text-xl font-bold"
-          renderLabel={(progress) => `${progress}%`}
-          className="stroke-orange-500/25"
-          progressClassName="stroke-orange-600"
-        />
-      </div>
-      <Slider
-        defaultValue={progress}
-        max={100}
-        step={1}
-        onValueChange={setProgress}
-        className="mt-6"
-      />
     </div>
   );
 }
