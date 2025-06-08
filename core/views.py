@@ -16,16 +16,9 @@ import math
 
 from rest_framework import viewsets, status, generics, permissions
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework.response import Response
-from django.contrib.auth import get_user_model
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
-from django.core.cache import cache
 from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page
-
-from .models import Note
-from .serializers import UserSerializer, NoteSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -33,14 +26,7 @@ from django.db import IntegrityError
 from django.core.exceptions import ValidationError
 from .api.responses import error_response
 from rest_framework.exceptions import PermissionDenied
-# Import our custom throttle
-from .throttles import LoginRateThrottle
-# Import Celery task
-from .tasks import mark_note_as_old
 
-User = get_user_model()
-
-CACHE_TTL = 60 * 5  # cache for 5 minutes
 
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -73,7 +59,6 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
-    #throttle_classes = [LoginRateThrottle]
 # Authentication Views
 class RegisterView(APIView):
     permission_classes = [AllowAny]
