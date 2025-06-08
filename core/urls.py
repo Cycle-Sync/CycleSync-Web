@@ -1,16 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from .views import (
-    ProfileViewSet,
-    DailyEntryViewSet,
-    CycleViewSet,
-    PredictionViewSet,
-    CalendarView,
-    DashboardView,
-    RegisterView,
-)
-
+from .views import *
 router = DefaultRouter()
 router.register(r'profiles', ProfileViewSet, basename='profile')
 router.register(r'daily-entries', DailyEntryViewSet, basename='dailyentry')
