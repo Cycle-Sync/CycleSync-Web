@@ -1,7 +1,7 @@
 // src/components/AppLayout.tsx
 import { ReactNode } from 'react';
-import { AppSidebar } from './AppSidebar';
-import { ModeToggle } from './ModeToggle';
+import { AppSidebar } from './app-sidebar';
+import { ModeToggle } from './mode-toggle';
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   return (
