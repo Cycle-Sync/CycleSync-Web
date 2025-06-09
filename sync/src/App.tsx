@@ -33,7 +33,7 @@ function App() {
           path="/app/*"
           element={
             <PrivateRoute>
-              <AppLayout>
+              {/* <AppLayout> */}
                 <Routes>
                   <Route path="dashboard" element={<DashboardPage />} />
                   <Route path="calendar"  element={<CalendarPage />} />
@@ -41,7 +41,7 @@ function App() {
                   <Route path="profile"   element={<ProfilePage />} />
                   <Route index element={<Navigate to="dashboard" replace />} />
                 </Routes>
-              </AppLayout>
+              {/* </AppLayout> */}
             </PrivateRoute>
           }
         />
