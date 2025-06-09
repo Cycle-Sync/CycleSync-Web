@@ -85,6 +85,7 @@ class DailyEntry(models.Model):
     ]
     
     profile = models.ForeignKey(Profile, related_name='daily_entries', on_delete=models.CASCADE)
+    cycle = models.ForeignKey(Cycle, related_name='daily_entries', on_delete=models.CASCADE, null=True, blank=True)
     date = models.DateField(default=timezone.now)
     
     # Physical Symptoms
