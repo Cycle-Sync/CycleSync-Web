@@ -15,6 +15,7 @@ urlpatterns = [
     path('auth/register/', RegisterView.as_view(), name='auth-register'),
     path('auth/token/login/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('dashboard-metrics/', DashboardMetricsView.as_view(), name='dashboard-metrics'),
 
     # custom endpoints
     path('calendar/', CalendarView.as_view(), name='calendar'),

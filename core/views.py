@@ -262,3 +262,33 @@ class ConditionViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         return Condition.objects.all().order_by('name')
+    
+class DashboardMetricsView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        profile = request.user.profile
+        cycles = Cycle.objects.filter(user=request.user)
+        daily_entries = DailyEntry.objects.filter(profile=profile)
+        predictions = Prediction.objects.filter(user=request.user).order_by('-prediction_date')[:5]
+
+        # Average cycle length
+        avg_cycle_length = cycles.aggregate(models.Avg('cycle_length'))['cycle_length__avg'] or profile.cycle_length or 28
+
+        # Symptom frequency (e.g., days with cramps)
+        symptom_frequency = daily_entries.filter(cramps__gt=0).count()
+
+        # Prediction accuracy (average days off)
+        accuracies = [p.accuracy() for p in predictions if p.accuracy() is not None]
+        prediction_accuracy = sum(accuracies) / len(accuracies) if accuracies else None
+
+        # Hormone stability (placeholder until real data exists)
+        hormone_stability = "N/A"
+
+        return Response({
+            "average_cycle_length": round(avg_cycle_length, 1),
+            "symptom_frequency": symptom_frequency,
+            "prediction_accuracy": round(prediction_accuracy, 1) if prediction_accuracy else None,
+            "hormone_stability": hormone_stability,
+        })
