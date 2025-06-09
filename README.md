@@ -1,7 +1,6 @@
 # 🌸 CycleSync - Menstrual Cycle Tracker
 
 ![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
-![License](https://img.shields.io/badge/license-GPL-3.0.svg)
 ![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)
 
 **Empowering women through personalized menstrual health tracking and insights.**
@@ -66,21 +65,21 @@ CycleSync is a comprehensive menstrual cycle tracking application designed to he
 - **Chart.js** for interactive data visualizations
 - **React Router** for seamless navigation
 - **React Hook Form** for efficient form handling
+- **Shadcn UI** for reuseable components
 
 ### **Backend Infrastructure**
-- **Node.js** with Express.js framework
-- **JWT Authentication** for secure user sessions
-- **bcrypt** for password hashing and security
-- **Express Validator** for input sanitization
+- **Django** framework
+- **REST-FRAMEOWORK-SIMPLE-JWT Authentication** for secure user sessions
+- **VALIDATOR** for password hashing and security
+- **MORE...** 
 
 ### **Database & Storage**
-- **MongoDB** with Mongoose ODM for flexible data modeling
-- **Redis** for session management and caching
-- **Cloudinary** for secure image storage
+- **POSTGRESQL** for flexible data modeling
+- **Redis** for session management and caching(to-do)
+- **Cloudinary** for secure image storage(to-do)
 
 ### **Deployment & DevOps**
 - **Vercel** for frontend deployment and hosting
-- **MongoDB Atlas** for managed database services
 - **GitHub Actions** for CI/CD pipeline
 - **Docker** containerization for development consistency
 
@@ -91,28 +90,25 @@ CycleSync is a comprehensive menstrual cycle tracking application designed to he
 ### Prerequisites
 
 Ensure you have the following installed:
-- [Node.js](https://nodejs.org/) (v18.0.0 or higher)
-- [MongoDB](https://www.mongodb.com/) (v5.0 or higher)
-- [Git](https://git-scm.com/)
-- [Yarn](https://yarnpkg.com/) (recommended) or npm
+
 
 ### Installation
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/cyclesync.git
+   git clone https://github.com/unmatached78/cyclesync.git
    cd cyclesync
    ```
 
 2. **Install dependencies**
    ```bash
    # Install backend dependencies
-   cd backend
-   yarn install
+   ..
+   pip install -r equirements.txt
    
    # Install frontend dependencies
-   cd ../frontend
-   yarn install
+   cd ../sync
+   npm install
    ```
 
 3. **Environment Configuration**
@@ -168,7 +164,7 @@ Ensure you have the following installed:
 
 ```
 cyclesync/
-├── frontend/                  # React frontend application
+├── sync/                  # React frontend application
 │   ├── public/               # Static assets
 │   ├── src/
 │   │   ├── components/       # Reusable UI components
@@ -180,16 +176,7 @@ cyclesync/
 │   │   └── styles/          # Global styles and themes
 │   ├── package.json
 │   └── tailwind.config.js
-├── backend/                  # Node.js backend API
-│   ├── src/
-│   │   ├── controllers/     # Route controllers
-│   │   ├── models/          # Database models
-│   │   ├── routes/          # API routes
-│   │   ├── middleware/      # Custom middleware
-│   │   ├── utils/           # Helper functions
-│   │   └── config/          # Configuration files
-│   ├── tests/               # Test files
-│   └── package.json
+├
 ├── docs/                    # Documentation
 ├── docker-compose.yml       # Docker configuration
 ├── .github/                 # GitHub Actions workflows
@@ -204,15 +191,12 @@ cyclesync/
 
 ```bash
 # Backend tests
-cd backend
-yarn test
-yarn test:watch    # Watch mode
-yarn test:coverage # Coverage report
+..
 
 # Frontend tests
-cd frontend
-yarn test
-yarn test:coverage
+cd sync
+npm test
+npm test:coverage
 ```
 
 ### Test Coverage
