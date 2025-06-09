@@ -13,7 +13,7 @@ router.register(r'conditions', ConditionViewSet, basename='condition')
 urlpatterns = [
     path('', include(router.urls)),
     path('auth/register/', RegisterView.as_view(), name='auth-register'),
-    path('auth/token/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('auth/token/login/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
     # custom endpoints
