@@ -1,3 +1,4 @@
+
 // "use client";
 
 // import * as React from "react";
@@ -28,24 +29,21 @@
 //   ToggleGroup,
 //   ToggleGroupItem,
 // } from "@/components/ui/toggle-group";
+// import api from "@/api/api"; // Your axios instance
 
 // export const description = "An interactive area chart";
 
-// const chartData = Array.from({ length: 28 }, (_, i) => ({
-//   day: `Day ${i + 1}`,
-//   estrogen: Math.random() * 300 + 50, // Simulated estrogen levels (50-350 pg/mL)
-//   progesterone: Math.random() * 15 + 0.5, // Simulated progesterone levels (0.5-15 ng/mL)
-// }));
-
-// // Define hardcoded HSL colors for estrogen and progesterone
 // const chartConfig = {
-//   estrogen: { label: "Estrogen (pg/mL)", color: "hsl(39, 100%, 50%)" }, // Orange-yellow
+//   estradiol: { label: "Estradiol (pg/mL)", color: "hsl(39, 100%, 50%)" }, // Orange-yellow
 //   progesterone: { label: "Progesterone (ng/mL)", color: "hsl(51, 100%, 50%)" }, // Shiny gold
 // } satisfies ChartConfig;
 
 // export function ChartAreaInteractive() {
 //   const isMobile = useIsMobile();
 //   const [timeRange, setTimeRange] = React.useState("28d");
+//   const [chartData, setChartData] = React.useState<any[]>([]);
+//   const [loading, setLoading] = React.useState(true);
+//   const [error, setError] = React.useState<string | null>(null);
 
 //   React.useEffect(() => {
 //     if (isMobile) {
@@ -53,12 +51,36 @@
 //     }
 //   }, [isMobile]);
 
+//   React.useEffect(() => {
+//     const fetchHormoneData = async () => {
+//       try {
+//         setLoading(true);
+//         const { data } = await api.get("/dashboard/");
+//         // Transform backend data to chart format
+//         const transformedData = data.days.map((day: number, index: number) => ({
+//           day: `Day ${day}`,
+//           estradiol: data.estradiol[index],
+//           progesterone: data.progesterone[index],
+//         }));
+//         setChartData(transformedData);
+//         setLoading(false);
+//       } catch (err) {
+//         setError("Failed to load hormone data");
+//         setLoading(false);
+//       }
+//     };
+//     fetchHormoneData();
+//   }, []);
+
 //   const filteredData = chartData.filter((item, index) => {
-//     let daysToShow = 28;
+//     let daysToShow = chartData.length; // Default to full cycle
 //     if (timeRange === "14d") daysToShow = 14;
 //     else if (timeRange === "7d") daysToShow = 7;
 //     return index >= chartData.length - daysToShow;
 //   });
+
+//   if (loading) return <div>Loading...</div>;
+//   if (error) return <div>Error: {error}</div>;
 
 //   return (
 //     <Card className="@container/card">
@@ -108,10 +130,9 @@
 //         <ChartContainer config={chartConfig} className="aspect-auto h-[250px] w-full">
 //           <AreaChart data={filteredData}>
 //             <defs>
-//               {/* Gradients using hardcoded colors from chartConfig */}
-//               <linearGradient id="fillEstrogen" x1="0" y1="0" x2="0" y2="1">
-//                 <stop offset="5%" stopColor={chartConfig.estrogen.color} stopOpacity={1.0} />
-//                 <stop offset="95%" stopColor={chartConfig.estrogen.color} stopOpacity={0.1} />
+//               <linearGradient id="fillEstradiol" x1="0" y1="0" x2="0" y2="1">
+//                 <stop offset="5%" stopColor={chartConfig.estradiol.color} stopOpacity={1.0} />
+//                 <stop offset="95%" stopColor={chartConfig.estradiol.color} stopOpacity={0.1} />
 //               </linearGradient>
 //               <linearGradient id="fillProgesterone" x1="0" y1="0" x2="0" y2="1">
 //                 <stop offset="5%" stopColor={chartConfig.progesterone.color} stopOpacity={0.8} />
@@ -131,12 +152,11 @@
 //               defaultIndex={isMobile ? -1 : 10}
 //               content={<ChartTooltipContent indicator="dot" />}
 //             />
-//             {/* Area components with hardcoded stroke colors */}
 //             <Area
-//               dataKey="estrogen"
+//               dataKey="estradiol"
 //               type="natural"
-//               fill="url(#fillEstrogen)"
-//               stroke={chartConfig.estrogen.color}
+//               fill="url(#fillEstradiol)"
+//               stroke={chartConfig.estradiol.color}
 //               stackId="a"
 //             />
 //             <Area
@@ -152,6 +172,137 @@
 //     </Card>
 //   );
 // }
+
+// // withoout date-range
+// "use client";
+
+// import * as React from "react";
+// import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
+// import { useIsMobile } from "@/hooks/use-mobile";
+// import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+// import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+// import api from "@/api/api";
+
+// const chartConfig = {
+//   fsh: { label: "FSH (mIU/mL)", color: "hsl(30, 100%, 50%)" },
+//   lh: { label: "LH (mIU/mL)", color: "hsl(45, 100%, 50%)" },
+//   estradiol: { label: "Estradiol (pg/mL)", color: "hsl(39, 100%, 50%)" },
+//   progesterone: { label: "Progesterone (ng/mL)", color: "hsl(51, 100%, 50%)" },
+// } satisfies ChartConfig;
+
+// export function ChartAreaInteractive() {
+//   const isMobile = useIsMobile();
+//   const [timeRange, setTimeRange] = React.useState("28d");
+//   const [chartData, setChartData] = React.useState<any[]>([]);
+//   const [loading, setLoading] = React.useState(true);
+//   const [error, setError] = React.useState<string | null>(null);
+
+//   React.useEffect(() => {
+//     const fetchHormoneData = async () => {
+//       try {
+//         setLoading(true);
+//         const { data } = await api.get("/dashboard/");
+//         const transformedData = data.days.map((day: number, index: number) => ({
+//           day: `Day ${day}`,
+//           fsh: data.fsh[index],
+//           lh: data.lh[index],
+//           estradiol: data.estradiol[index],
+//           progesterone: data.progesterone[index],
+//         }));
+//         setChartData(transformedData);
+//         setLoading(false);
+//       } catch (err) {
+//         setError("Failed to load hormone data");
+//         setLoading(false);
+//       }
+//     };
+//     fetchHormoneData();
+//   }, []);
+
+//   const filteredData = chartData.filter((item, index) => {
+//     let daysToShow = chartData.length;
+//     if (timeRange === "14d") daysToShow = 14;
+//     else if (timeRange === "7d") daysToShow = 7;
+//     return index >= chartData.length - daysToShow;
+//   });
+
+//   if (loading) return <div>Loading...</div>;
+//   if (error) return <div>Error: {error}</div>;
+
+//   return (
+//     <Card>
+//       <CardHeader>
+//         <CardTitle>Hormone Levels</CardTitle>
+//       </CardHeader>
+//       <CardContent>
+//         <ChartContainer config={chartConfig} className="h-[250px] w-full">
+//           <AreaChart data={filteredData}>
+//             <defs>
+//               <linearGradient id="fillFSH" x1="0" y1="0" x2="0" y2="1">
+//                 <stop offset="5%" stopColor={chartConfig.fsh.color} stopOpacity={1.0} />
+//                 <stop offset="95%" stopColor={chartConfig.fsh.color} stopOpacity={0.1} />
+//               </linearGradient>
+//               <linearGradient id="fillLH" x1="0" y1="0" x2="0" y2="1">
+//                 <stop offset="5%" stopColor={chartConfig.lh.color} stopOpacity={1.0} />
+//                 <stop offset="95%" stopColor={chartConfig.lh.color} stopOpacity={0.1} />
+//               </linearGradient>
+//               <linearGradient id="fillEstradiol" x1="0" y1="0" x2="0" y2="1">
+//                 <stop offset="5%" stopColor={chartConfig.estradiol.color} stopOpacity={1.0} />
+//                 <stop offset="95%" stopColor={chartConfig.estradiol.color} stopOpacity={0.1} />
+//               </linearGradient>
+//               <linearGradient id="fillProgesterone" x1="0" y1="0" x2="0" y2="1">
+//                 <stop offset="5%" stopColor={chartConfig.progesterone.color} stopOpacity={0.8} />
+//                 <stop offset="95%" stopColor={chartConfig.progesterone.color} stopOpacity={0.1} />
+//               </linearGradient>
+//             </defs>
+//             <CartesianGrid vertical={false} />
+//             <XAxis
+//               dataKey="day"
+//               tickLine={false}
+//               axisLine={false}
+//               tickMargin={8}
+//               minTickGap={32}
+//             />
+//             <ChartTooltip
+//               cursor={false}
+//               content={<ChartTooltipContent indicator="dot" />}
+//             />
+//             <Area
+//               dataKey="fsh"
+//               type="natural"
+//               fill="url(#fillFSH)"
+//               stroke={chartConfig.fsh.color}
+//               stackId="a"
+//             />
+//             <Area
+//               dataKey="lh"
+//               type="natural"
+//               fill="url(#fillLH)"
+//               stroke={chartConfig.lh.color}
+//               stackId="a"
+//             />
+//             <Area
+//               dataKey="estradiol"
+//               type="natural"
+//               fill="url(#fillEstradiol)"
+//               stroke={chartConfig.estradiol.color}
+//               stackId="a"
+//             />
+//             <Area
+//               dataKey="progesterone"
+//               type="natural"
+//               fill="url(#fillProgesterone)"
+//               stroke={chartConfig.progesterone.color}
+//               stackId="a"
+//             />
+//           </AreaChart>
+//         </ChartContainer>
+//       </CardContent>
+//     </Card>
+//   );
+// }
+
+//for with date-range
 "use client";
 
 import * as React from "react";
@@ -187,13 +338,15 @@ import api from "@/api/api"; // Your axios instance
 export const description = "An interactive area chart";
 
 const chartConfig = {
+  fsh: { label: "FSH (mIU/mL)", color: "hsl(30, 100%, 50%)" }, // Orange
+  lh: { label: "LH (mIU/mL)", color: "hsl(45, 100%, 50%)" }, // Yellow
   estradiol: { label: "Estradiol (pg/mL)", color: "hsl(39, 100%, 50%)" }, // Orange-yellow
   progesterone: { label: "Progesterone (ng/mL)", color: "hsl(51, 100%, 50%)" }, // Shiny gold
 } satisfies ChartConfig;
 
 export function ChartAreaInteractive() {
   const isMobile = useIsMobile();
-  const [timeRange, setTimeRange] = React.useState("28d");
+  const [timeRange, setTimeRange] = React.useState("full");
   const [chartData, setChartData] = React.useState<any[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
@@ -212,6 +365,8 @@ export function ChartAreaInteractive() {
         // Transform backend data to chart format
         const transformedData = data.days.map((day: number, index: number) => ({
           day: `Day ${day}`,
+          fsh: data.fsh[index],
+          lh: data.lh[index],
           estradiol: data.estradiol[index],
           progesterone: data.progesterone[index],
         }));
@@ -225,12 +380,24 @@ export function ChartAreaInteractive() {
     fetchHormoneData();
   }, []);
 
-  const filteredData = chartData.filter((item, index) => {
+  const filteredData = React.useMemo(() => {
     let daysToShow = chartData.length; // Default to full cycle
-    if (timeRange === "14d") daysToShow = 14;
-    else if (timeRange === "7d") daysToShow = 7;
-    return index >= chartData.length - daysToShow;
-  });
+    switch (timeRange) {
+      case "30d":
+        daysToShow = Math.min(30, chartData.length);
+        break;
+      case "14d":
+        daysToShow = Math.min(14, chartData.length);
+        break;
+      case "7d":
+        daysToShow = Math.min(7, chartData.length);
+        break;
+      case "full":
+        daysToShow = chartData.length;
+        break;
+    }
+    return chartData.slice(-daysToShow);
+  }, [chartData, timeRange]);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -253,27 +420,31 @@ export function ChartAreaInteractive() {
             variant="outline"
             className="hidden *:data-[slot=toggle-group-item]:!px-4 @[767px]/card:flex"
           >
-            <ToggleGroupItem value="28d">Full Cycle</ToggleGroupItem>
-            <ToggleGroupItem value="14d">Last 14 Days</ToggleGroupItem>
-            <ToggleGroupItem value="7d">Last 7 Days</ToggleGroupItem>
+            <ToggleGroupItem value="full">Full Cycle</ToggleGroupItem>
+            <ToggleGroupItem value="30d">Last Month</ToggleGroupItem>
+            <ToggleGroupItem value="14d">Last 2 Weeks</ToggleGroupItem>
+            <ToggleGroupItem value="7d">Last Week</ToggleGroupItem>
           </ToggleGroup>
           <Select value={timeRange} onValueChange={setTimeRange}>
             <SelectTrigger
               className="flex w-40 @[767px]/card:hidden"
               size="sm"
-              aria-label="Select a value"
+              aria-label="Select a time range"
             >
               <SelectValue placeholder="Full Cycle" />
             </SelectTrigger>
             <SelectContent className="rounded-xl">
-              <SelectItem value="28d" className="rounded-lg">
+              <SelectItem value="full" className="rounded-lg">
                 Full Cycle
               </SelectItem>
+              <SelectItem value="30d" className="rounded-lg">
+                Last Month
+              </SelectItem>
               <SelectItem value="14d" className="rounded-lg">
-                Last 14 Days
+                Last 2 Weeks
               </SelectItem>
               <SelectItem value="7d" className="rounded-lg">
-                Last 7 Days
+                Last Week
               </SelectItem>
             </SelectContent>
           </Select>
@@ -283,6 +454,14 @@ export function ChartAreaInteractive() {
         <ChartContainer config={chartConfig} className="aspect-auto h-[250px] w-full">
           <AreaChart data={filteredData}>
             <defs>
+              <linearGradient id="fillFSH" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor={chartConfig.fsh.color} stopOpacity={1.0} />
+                <stop offset="95%" stopColor={chartConfig.fsh.color} stopOpacity={0.1} />
+              </linearGradient>
+              <linearGradient id="fillLH" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor={chartConfig.lh.color} stopOpacity={1.0} />
+                <stop offset="95%" stopColor={chartConfig.lh.color} stopOpacity={0.1} />
+              </linearGradient>
               <linearGradient id="fillEstradiol" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor={chartConfig.estradiol.color} stopOpacity={1.0} />
                 <stop offset="95%" stopColor={chartConfig.estradiol.color} stopOpacity={0.1} />
@@ -304,6 +483,20 @@ export function ChartAreaInteractive() {
               cursor={false}
               defaultIndex={isMobile ? -1 : 10}
               content={<ChartTooltipContent indicator="dot" />}
+            />
+            <Area
+              dataKey="fsh"
+              type="natural"
+              fill="url(#fillFSH)"
+              stroke={chartConfig.fsh.color}
+              stackId="a"
+            />
+            <Area
+              dataKey="lh"
+              type="natural"
+              fill="url(#fillLH)"
+              stroke={chartConfig.lh.color}
+              stackId="a"
             />
             <Area
               dataKey="estradiol"
