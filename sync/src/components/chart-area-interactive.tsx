@@ -38,14 +38,9 @@ const chartData = Array.from({ length: 28 }, (_, i) => ({
   progesterone: Math.random() * 15 + 0.5, // Simulated progesterone levels (0.5-15 ng/mL)
 }));
 
-// const chartConfig = {
-//   estrogen: { label: "Estrogen (pg/mL)", color: "hsl(var(--chart-1))" },
-//   progesterone: { label: "Progesterone (ng/mL)", color: "hsl(var(--chart-2))" },
-// } satisfies ChartConfig;
-
 const chartConfig = {
-  estrogen: { label: "Estrogen (pg/mL)", color: "hsl(220, 70%, 50%)" }, // Soft blue
-  progesterone: { label: "Progesterone (ng/mL)", color: "hsl(340, 60%, 65%)" }, // Soft pink
+  estrogen: { label: "Estrogen (pg/mL)", color: "hsl(var(--chart-1))" },
+  progesterone: { label: "Progesterone (ng/mL)", color: "hsl(var(--chart-2))" },
 } satisfies ChartConfig;
 
 export function ChartAreaInteractive() {
