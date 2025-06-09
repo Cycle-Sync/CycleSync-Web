@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
+import { ModeToggle } from "./mode-toggle";
 
 export function SiteHeader() {
   return (
@@ -13,6 +14,8 @@ export function SiteHeader() {
       <Button asChild variant="outline">
         <a href="https://github.com/your-repo">GitHub</a>
       </Button>
+      <ModeToggle className="ml-auto" />
+      <Separator orientation="vertical" className="ml-2 h-6" />
     </header>
   );
 }
