@@ -1,7 +1,7 @@
 # 🌸 CycleSync - Menstrual Cycle Tracker
 
 ![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
-![License](https://img.shields.io/badge/license-MIT-green.svg)
+![License](https://img.shields.io/badge/license-GPL-3.0.svg)
 ![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)
 
 **Empowering women through personalized menstrual health tracking and insights.**
@@ -319,7 +319,7 @@ Found a bug or have a feature idea? We'd love to hear from you!
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the GPL-3.0 license - see the [LICENSE](LICENSE) file for details.
 
 ---
 
@@ -344,6 +344,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Made with ❤️ for reproductive health empowerment**
 
-[⭐ Star this repository](https://github.com/yourusername/cyclesync) if you found it helpful!
+[⭐ Star this repository](https://github.com/unmatched78/cyclesync) if you found it helpful!
 
 </div>
