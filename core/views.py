@@ -225,30 +225,17 @@ class CalendarView(APIView):
 
 
 class DashboardView(APIView):
-    """
-    GET /api/dashboard/
-    Returns hormone curves over a 30-day cycle.
-    """
     authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        days = list(range(1, 31))
-        fsh = [5 + 2 * math.exp(-((d - 1) / 5) ** 2) + 0.5 * math.sin(d / 30 * 2 * math.pi) for d in days]
-        lh = [1 + 10 * math.exp(-((d - 14) / 1.5) ** 2) for d in days]
-        estradiol = [
-            5 + 8 * math.exp(-((d - 12) / 3) ** 2) + 2 * math.exp(-((d - 21) / 4) ** 2)
-            for d in days
-        ]
-        progesterone = [1 + 5 * math.exp(-((d - 21) / 3) ** 2) for d in days]
-
-        return Response({
-            "days": days,
-            "fsh": fsh,
-            "lh": lh,
-            "estradiol": estradiol,
-            "progesterone": progesterone,
-        })
+        cycle_length = request.user.profile.cycle_length or 28
+        days = list(range(1, cycle_length + 1))
+        fsh = [5 + 2 * math.exp(-((d - 1) / 5) ** 2) for d in days]
+        lh = [1 + 10 * math.exp(-((d - cycle_length // 2) / 1.5) ** 2) for d in days]
+        estradiol = [5 + 8 * math.exp(-((d - cycle_length // 2 - 2) / 3) ** 2) for d in days]
+        progesterone = [1 + 5 * math.exp(-((d - cycle_length // 2 + 7) / 3) ** 2) for d in days]
+        return Response({"days": days, "fsh": fsh, "lh": lh, "estradiol": estradiol, "progesterone": progesterone})
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
     """
     /api/users/       [GET]
