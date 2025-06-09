@@ -8,95 +8,76 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
+  CardContent,
 } from "@/components/ui/card"
 
 export function SectionCards() {
   return (
-    <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
-      <Card className="@container/card">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <Card>
         <CardHeader>
-          <CardDescription>Total Revenue</CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            $1,250.00
-          </CardTitle>
-          <CardAction>
-            <Badge variant="outline">
-              <IconTrendingUp />
-              +12.5%
-            </Badge>
-          </CardAction>
+          <CardTitle>Average Cycle Length</CardTitle>
+          <CardDescription>Based on the last 6 cycles</CardDescription>
         </CardHeader>
-        <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Trending up this month <IconTrendingUp className="size-4" />
-          </div>
-          <div className="text-muted-foreground">
-            Visitors for the last 6 months
+        <CardContent>
+          <div className="text-2xl font-bold">28.3 days</div>
+          <Badge variant="outline" className="mt-2">+0.5 days</Badge>
+        </CardContent>
+        <CardFooter>
+          <div className="flex gap-2 leading-none font-medium">
+            Stable cycle duration
+            <IconTrendingUp className="size-4" />
           </div>
         </CardFooter>
       </Card>
-      <Card className="@container/card">
+      <Card>
         <CardHeader>
-          <CardDescription>New Customers</CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            1,234
-          </CardTitle>
-          <CardAction>
-            <Badge variant="outline">
-              <IconTrendingDown />
-              -20%
-            </Badge>
-          </CardAction>
+          <CardTitle>Symptom Frequency</CardTitle>
+          <CardDescription>Common symptoms this cycle</CardDescription>
         </CardHeader>
-        <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Down 20% this period <IconTrendingDown className="size-4" />
-          </div>
-          <div className="text-muted-foreground">
-            Acquisition needs attention
+        <CardContent>
+          <div className="text-2xl font-bold">3 symptoms</div>
+          <Badge variant="outline" className="mt-2">Cramps, Mood Swings</Badge>
+        </CardContent>
+        <CardFooter>
+          <div className="flex gap-2 leading-none font-medium">
+            Monitor for patterns
+            <IconTrendingDown className="size-4" />
           </div>
         </CardFooter>
       </Card>
-      <Card className="@container/card">
+      <Card>
         <CardHeader>
-          <CardDescription>Active Accounts</CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            45,678
-          </CardTitle>
-          <CardAction>
-            <Badge variant="outline">
-              <IconTrendingUp />
-              +12.5%
-            </Badge>
-          </CardAction>
+          <CardTitle>Hormone Stability</CardTitle>
+          <CardDescription>Estrogen & Progesterone variance</CardDescription>
         </CardHeader>
-        <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Strong user retention <IconTrendingUp className="size-4" />
+        <CardContent>
+          <div className="text-2xl font-bold">Low Variance</div>
+          <Badge variant="outline" className="mt-2">+2.5%</Badge>
+        </CardContent>
+        <CardFooter>
+          <div className="flex gap-2 leading-none font-medium">
+            Within normal range
+            <IconTrendingUp className="size-4" />
           </div>
-          <div className="text-muted-foreground">Engagement exceed targets</div>
         </CardFooter>
       </Card>
-      <Card className="@container/card">
+      <Card>
         <CardHeader>
-          <CardDescription>Growth Rate</CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            4.5%
-          </CardTitle>
-          <CardAction>
-            <Badge variant="outline">
-              <IconTrendingUp />
-              +4.5%
-            </Badge>
-          </CardAction>
+          <CardTitle>Prediction Accuracy</CardTitle>
+          <CardDescription>Ovulation & period predictions</CardDescription>
         </CardHeader>
-        <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Steady performance increase <IconTrendingUp className="size-4" />
+        <CardContent>
+          <div className="text-2xl font-bold">92%</div>
+          <Badge variant="outline" className="mt-2">+4%</Badge>
+        </CardContent>
+        <CardFooter>
+          <div className="flex gap-2 leading-none font-medium">
+            Reliable predictions
+            <IconTrendingUp className="size-4" />
           </div>
-          <div className="text-muted-foreground">Meets growth projections</div>
         </CardFooter>
       </Card>
     </div>
-  )
+  );
 }

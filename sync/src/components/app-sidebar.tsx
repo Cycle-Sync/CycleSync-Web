@@ -55,120 +55,48 @@ import {
 
 const data = {
   user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
+    name: "Jane Doe",
+    email: "jane@example.com",
+    avatar: "/avatars/jane.jpg",
   },
   navMain: [
-    {
-      title: "Dashboard",
-      url: "#",
-      icon: IconDashboard,
-    },
-    {
-      title: "Lifecycle",
-      url: "#",
-      icon: IconListDetails,
-    },
-    {
-      title: "Analytics",
-      url: "#",
-      icon: IconChartBar,
-    },
-    {
-      title: "Projects",
-      url: "#",
-      icon: IconFolder,
-    },
-    {
-      title: "Team",
-      url: "#",
-      icon: IconUsers,
-    },
+    { title: "Dashboard", url: "#", icon: IconDashboard },
+    { title: "Cycle Tracker", url: "#", icon: IconListDetails },
+    { title: "Hormone Analytics", url: "#", icon: IconChartBar },
+    { title: "Symptoms Log", url: "#", icon: IconFileDescription },
+    { title: "Health Insights", url: "#", icon: IconReport },
   ],
   navClouds: [
     {
-      title: "Capture",
-      icon: IconCamera,
-      isActive: true,
+      title: "Cycle History",
+      icon: IconFolder,
       url: "#",
       items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
+        { title: "Current Cycle", url: "#" },
+        { title: "Past Cycles", url: "#" },
       ],
     },
     {
-      title: "Proposal",
+      title: "Symptoms",
       icon: IconFileDescription,
       url: "#",
       items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Prompts",
-      icon: IconFileAi,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
+        { title: "Log New Symptom", url: "#" },
+        { title: "Symptom Trends", url: "#" },
       ],
     },
   ],
   navSecondary: [
-    {
-      title: "Settings",
-      url: "#",
-      icon: IconSettings,
-    },
-    {
-      title: "Get Help",
-      url: "#",
-      icon: IconHelp,
-    },
-    {
-      title: "Search",
-      url: "#",
-      icon: IconSearch,
-    },
+    { title: "Settings", url: "#", icon: IconSettings },
+    { title: "Help & Support", url: "#", icon: IconHelp },
+    { title: "Search Cycles", url: "#", icon: IconSearch },
   ],
   documents: [
-    {
-      name: "Data Library",
-      url: "#",
-      icon: IconDatabase,
-    },
-    {
-      name: "Reports",
-      url: "#",
-      icon: IconReport,
-    },
-    {
-      name: "Word Assistant",
-      url: "#",
-      icon: IconFileWord,
-    },
+    { name: "Health Records", url: "#", icon: IconDatabase },
+    { name: "Reports", url: "#", icon: IconReport },
+    { name: "Doctor Notes", url: "#", icon: IconFileWord },
   ],
-}
+};
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
