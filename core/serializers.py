@@ -47,11 +47,11 @@ class CycleSerializer(serializers.ModelSerializer):
 
 class DailyEntrySerializer(serializers.ModelSerializer):
     profile = ProfileSerializer(read_only=True)
-
+    cycle = CycleSerializer(read_only=True)
     class Meta:
         model = DailyEntry
         fields = [
-            'id', 'profile', 'date', 'cramps', 'bloating', 'tender_breasts', 'headache', 'acne',
+            'id', 'profile', 'date', 'cramps', 'cycle', 'bloating', 'tender_breasts', 'headache', 'acne',
             'mood', 'stress', 'energy', 'cervical_mucus', 'sleep_quality', 'libido', 'notes'
         ]
 
