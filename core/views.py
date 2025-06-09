@@ -2,19 +2,15 @@
 
 from datetime import date, timedelta
 import math
-
 from django.contrib.auth.models import User
-
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-
 from .models import Profile, DailyEntry, Cycle, Prediction, Condition
 from .serializers import ConditionSerializer
 from .serializers import (
@@ -138,7 +134,9 @@ class DailyEntryViewSet(viewsets.ModelViewSet):
         return DailyEntry.objects.filter(profile=self.request.user.profile)
 
     def perform_create(self, serializer):
-        serializer.save(profile=self.request.user.profile)
+        date = serializer.validated_data['date']
+        cycle = Cycle.objects.filter(user=self.request.user, start_date__lte=date, end_date__gte=date).first()
+        serializer.save(profile=self.request.user.profile, cycle=cycle)
 
 
 class CycleViewSet(viewsets.ModelViewSet):
