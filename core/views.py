@@ -13,6 +13,8 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import Profile, DailyEntry, Cycle, Prediction, Condition
 from .serializers import ConditionSerializer
+from calendar import monthrange
+from datetime import date, timedelta
 from .serializers import (
     UserSerializer,
     ProfileSerializer,
@@ -292,3 +294,78 @@ class DashboardMetricsView(APIView):
             "prediction_accuracy": round(prediction_accuracy, 1) if prediction_accuracy else None,
             "hormone_stability": hormone_stability,
         })
+
+
+class CycleCalendarDataView(APIView):
+    """
+    GET /api/cycle-calendar/<year>/<month>/
+    Returns a list of days in the specified month with cycle phases and flags.
+    """
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, year, month):
+        profile = request.user.profile
+        cycle_len = profile.cycle_length or 28
+        period_len = profile.period_length or 5
+
+        # Get the number of days in the specified month
+        _, num_days = monthrange(year, month)
+        start_date = date(year, month, 1)
+        end_date = date(year, month, num_days)
+
+        # Fetch cycles overlapping with this month
+        cycles = Cycle.objects.filter(
+            user=request.user,
+            start_date__lte=end_date,
+            end_date__gte=start_date
+        ).order_by('start_date')
+
+        days_list = []
+        for d in (start_date + timedelta(n) for n in range(num_days)):
+            # Check if the day is in a recorded cycle
+            cycle = next((c for c in cycles if c.start_date <= d <= c.end_date), None)
+            if cycle:
+                offset = (d - cycle.start_date).days
+                if offset < period_len:
+                    phase = "menstrual"
+                elif offset < cycle.cycle_length // 2 - 5:
+                    phase = "follicular"
+                elif offset < cycle.cycle_length // 2:
+                    phase = "fertile"
+                elif offset == cycle.cycle_length // 2:
+                    phase = "ovulation"
+                else:
+                    phase = "luteal"
+            else:
+                # Fallback to profile-based calculation
+                last_ovulation = profile.last_ovulation
+                if last_ovulation:
+                    days_since_last_ov = (d - last_ovulation).days
+                    cycle_index = days_since_last_ov // cycle_len
+                    cycle_start = last_ovulation + timedelta(days=cycle_index * cycle_len)
+                    offset = (d - cycle_start).days
+                    if 0 <= offset < cycle_len:
+                        if offset < period_len:
+                            phase = "menstrual"
+                        elif offset < cycle_len // 2 - 5:
+                            phase = "follicular"
+                        elif offset < cycle_len // 2:
+                            phase = "fertile"
+                        elif offset == cycle_len // 2:
+                            phase = "ovulation"
+                        else:
+                            phase = "luteal"
+                    else:
+                        phase = "unknown"
+                else:
+                    phase = "unknown"
+
+            days_list.append({
+                "date": d.isoformat(),
+                "phase": phase,
+                "is_today": d == date.today(),
+                "is_past": d < date.today(),
+            })
+
+        return Response({"days_list": days_list})
