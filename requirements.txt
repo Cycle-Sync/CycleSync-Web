@@ -11,6 +11,8 @@ django-countries
 django-select2
 django-formtools
 whitenoise
+djangorestframework-simplejwt
+djangorestframework
 # numpy
 # keras
 # tensorflow

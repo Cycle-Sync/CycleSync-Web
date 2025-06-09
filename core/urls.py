@@ -1,17 +1,22 @@
-from django.urls import path
-from .views import*
-from .forms import FORMS
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from .views import *
+router = DefaultRouter()
+router.register(r'profiles', ProfileViewSet, basename='profile')
+router.register(r'daily-entries', DailyEntryViewSet, basename='dailyentry')
+router.register(r'cycles', CycleViewSet, basename='cycle')
+router.register(r'predictions', PredictionViewSet, basename='prediction')
+router.register(r'users', UserViewSet)
+#condition viewset
+router.register(r'conditions', ConditionViewSet, basename='condition')
 urlpatterns = [
-    path('',home, name='home'),
-    #path('signup/', views.signup, name='signup'),
-    path('login/', login_view, name='login'),
-    path('logout/',logout_view, name='logout'),
-    path('dashboard/', dashboard, name='dashboard'),
-    path('signup/', SignupWizard.as_view(), name='signup'),
-    path('ajax/validate-username/', validate_username, name='validate_username'),
-    #path('log_cycle/', log_cycle, name='log_cycle'),
-    path('calendar/', calendar_view, name='calendar'),
-    path('daily-log/', daily_log, name='daily_log'),
-    path('beads_view/', beads_view, name='beads_view'),
-    path('profile/', profile_view, name='profile'),
+    path('', include(router.urls)),
+    path('auth/register/', RegisterView.as_view(), name='auth-register'),
+    path('auth/token/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+
+    # custom endpoints
+    path('calendar/', CalendarView.as_view(), name='calendar'),
+    path('dashboard/', DashboardView.as_view(), name='dashboard'),
 ]

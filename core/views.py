@@ -1,290 +1,279 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
-from .models import *
-from .forms import *
-from django.contrib import messages
+# core/views.py
+
 from datetime import date, timedelta
-from django.utils import timezone
-import calendar
-import json
-from formtools.wizard.views import SessionWizardView
-from django.http import JsonResponse, HttpResponse
-from django.utils.safestring import mark_safe
-FORMS = [
-    ("dob", DateOfBirthForm),
-    ("country", CountryForm),
-    ("username", UsernameForm),
-    ("conditions", ConditionsForm),
-    ("ovulation", OvulationForm),
-    ("type", CycleTypeForm),
-    ("length", CycleLengthForm),
-    ("period", PeriodLengthForm),
-    ("prefs", PreferencesForm),
-]
+import math
 
-TEMPLATES = {"*": "core/signup_wizard.html"}
-class SignupWizard(SessionWizardView):
-    form_list = FORMS
-    template_name = "core/signup_wizard.html"
+from django.contrib.auth.models import User
 
-    def done(self, form_list, **kwargs):
-        # merge all steps' cleaned_data
-        data = {}
-        for form in form_list:
-            data.update(form.cleaned_data)
-        username=data['username']
-        if User.objects.filter(username=username).exists():  
-           messages.error("Username already taken. Please choose another one.")  
-           return redirect('signup')
-        # 1) Create the user
-        user = User.objects.create_user(
-            username=data['username'],
-            password=data['password']
-        )
+from rest_framework import viewsets, permissions, status
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-        # 2) Create their profile
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
+from .models import Profile, DailyEntry, Cycle, Prediction, Condition
+from .serializers import ConditionSerializer
+from .serializers import (
+    UserSerializer,
+    ProfileSerializer,
+    DailyEntrySerializer,
+    CycleSerializer,
+    PredictionSerializer,
+)
+
+
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    """
+    Extends SimpleJWT to include user info in the token response.
+    """
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        return {
+            "tokens": {
+                "refresh": data["refresh"],
+                "access": data["access"],
+            },
+            "user": {
+                "id": self.user.id,
+                "username": self.user.username,
+            },
+        }
+
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        token["user_id"] = user.id
+        return token
+
+
+class MyTokenObtainPairView(TokenObtainPairView):
+    """
+    POST /api/auth/token/  -> { tokens: { refresh, access }, user: {...} }
+    """
+    serializer_class = MyTokenObtainPairSerializer
+
+
+class RegisterView(APIView):
+    """
+    POST /api/auth/register/
+    {
+      "username": "...",
+      "password": "...",
+      "date_of_birth": "YYYY-MM-DD",
+      "country": "US",
+      "last_ovulation": "YYYY-MM-DD",
+      "cycle_type": "regular",
+      "cycle_length": 28,
+      "period_length": 5,
+      "preferences": ["cycle", "symptoms"],
+      "medical_conditions": [1,2,3]
+    }
+    """
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        data = request.data
+        username = data.get("username")
+        password = data.get("password")
+
+        if User.objects.filter(username=username).exists():
+            return Response(
+                {"error": "Username already taken"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        user = User.objects.create_user(username=username, password=password)
         profile = Profile.objects.create(
             user=user,
-            date_of_birth=data['date_of_birth'],
-            country=data['country'],
-            last_ovulation=data.get('last_ovulation'),
-            cycle_type=data['cycle_type'],
-            cycle_length=data.get('cycle_length'),
-            period_length=data.get('period_length'),
-            preferences=data.get('preferences', [])
+            date_of_birth=data.get("date_of_birth"),
+            country=data.get("country"),
+            last_ovulation=data.get("last_ovulation"),
+            cycle_type=data.get("cycle_type", "unknown"),
+            cycle_length=data.get("cycle_length"),
+            period_length=data.get("period_length"),
+            preferences=data.get("preferences", []),
         )
+        if "medical_conditions" in data:
+            profile.medical_conditions.set(data["medical_conditions"])
 
-        # 3) Assign any medical conditions (if chosen)
-        if data.get('conditions'):
-            profile.medical_conditions.set(data['conditions'])
-            messages.success(self.request, "Profile created successfully!")
-        return redirect('login')
-@login_required(login_url='login')
-def daily_log(request):
-    today = date.today()
+        refresh = RefreshToken.for_user(user)
+        return Response({
+            "refresh": str(refresh),
+            "access": str(refresh.access_token),
+            "user": UserSerializer(user).data
+        }, status=status.HTTP_201_CREATED)
 
-    # 1) Get the user’s profile (assumes one-to-one always exists)
-    try:
+
+class ProfileViewSet(viewsets.ModelViewSet):
+    """
+    /api/profiles/       [GET, POST]
+    /api/profiles/{pk}/  [GET, PUT, PATCH, DELETE]
+    /api/profiles/me/    [GET]  — current user's profile
+    """
+    queryset = Profile.objects.select_related("user").all()
+    serializer_class = ProfileSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    @action(detail=False, methods=["get"], url_path="me")
+    def me(self, request):
+        serializer = self.get_serializer(request.user.profile)
+        return Response(serializer.data)
+
+
+class DailyEntryViewSet(viewsets.ModelViewSet):
+    """
+    /api/daily-entries/       [GET, POST]
+    /api/daily-entries/{pk}/  [GET, PUT, PATCH, DELETE]
+    """
+    serializer_class = DailyEntrySerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return DailyEntry.objects.filter(profile=self.request.user.profile)
+
+    def perform_create(self, serializer):
+        serializer.save(profile=self.request.user.profile)
+
+
+class CycleViewSet(viewsets.ModelViewSet):
+    """
+    /api/cycles/       [GET, POST]
+    /api/cycles/{pk}/  [GET, PUT, PATCH, DELETE]
+    """
+    serializer_class = CycleSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Cycle.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+
+class PredictionViewSet(viewsets.ModelViewSet):
+    """
+    /api/predictions/       [GET, POST]
+    /api/predictions/{pk}/  [GET, PUT, PATCH, DELETE]
+    """
+    serializer_class = PredictionSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Prediction.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+
+class CalendarView(APIView):
+    """
+    GET /api/calendar/
+    Returns a list of days in the current cycle with phases, angles, and flags.
+    """
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
         profile = request.user.profile
-    except Profile.DoesNotExist:
-        return redirect('signup')
+        last_end = profile.last_ovulation
+        cycle_len = profile.cycle_length
+        period_len = profile.period_length
+        today = date.today()
 
-    # 2) Get or create today's entry
-    entry, _ = DailyEntry.objects.get_or_create(profile=profile, date=today)
+        days_since = (today - last_end).days
+        cycle_index = max(0, days_since // cycle_len)
+        cycle_start = last_end + timedelta(days=cycle_index * cycle_len)
 
-    # 3) Bind and validate the form
-    if request.method == 'POST':
-        form = DailyEntryForm(request.POST, instance=entry)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Daily log updated successfully!")
-            return redirect('daily_log')
-        else:
-            messages.error(request, "Please correct the errors below.")
-    else:
-        form = DailyEntryForm(instance=entry)
+        days_list = []
+        ov_offset = cycle_len // 2
+        prev_month = None
 
-    # 4) Compute which cycle-day column this is
-    if profile.last_ovulation and profile.cycle_length:
-        days_since = (today - profile.last_ovulation).days
-        day_index  = (days_since % profile.cycle_length) + 1
-    else:
-        day_index = 1
+        for offset in range(cycle_len):
+            d = cycle_start + timedelta(days=offset)
+            is_new_month = (d.month != prev_month)
+            prev_month = d.month
+            angle = (360.0 / cycle_len) * offset
 
-    # 5) Prepare grouped field lists
-    physical_names   = ['cramps', 'bloating', 'tender_breasts', 'headache', 'acne']
-    emotional_names  = ['mood', 'stress', 'energy']
-    cervical_names   = ['cervical_mucus']
-    additional_names = ['sleep_quality', 'libido']
-
-    physical_fields   = [form[f] for f in physical_names]
-    emotional_fields  = [form[f] for f in emotional_names]
-    cervical_fields   = [form[f] for f in cervical_names]
-    additional_fields = [form[f] for f in additional_names]
-
-    return render(request, 'core/daily_log.html', {
-        'form': form,
-        'today': today,
-        'day_index': day_index,
-        'physical_fields': physical_fields,
-        'emotional_fields': emotional_fields,
-        'cervical_fields': cervical_fields,
-        'additional_fields': additional_fields,
-    })
-@login_required(login_url='login')
-def profile_view(request):
-    profile, created = Profile.objects.get_or_create(user=request.user)
-    if request.method == 'POST':
-        form = ProfileForm(request.POST, instance=profile)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Profile updated successfully!")
-            return redirect('profile')
-        else:
-            messages.error(request, "Please fix the errors below.")
-    else:
-        form = ProfileForm(instance=profile)
-
-    return render(request, 'core/profile.html', {
-        'form': form
-    })
-# AJAX endpoint
-def validate_username(request):
-    username = request.GET.get('username', None)
-    exists = User.objects.filter(username=username).exists()
-    return JsonResponse({'available': not exists})
-# core/views.py
-@login_required(login_url='login')
-def calendar_view(request):
-    profile    = Profile.objects.get(user=request.user)
-    last_end   = profile.last_ovulation
-    cycle_len  = profile.cycle_length
-    period_len = profile.period_length
-    today      = date.today()
-
-    # 1) Cycle start
-    days_since  = (today - last_end).days
-    cycle_index = max(0, days_since // cycle_len)
-    cycle_start = last_end + timedelta(days=cycle_index * cycle_len)
-    #just_ended = (today == cycle_end + timedelta(days=1))
-
-
-    # 2) Build days_list with new_month flag
-    days_list = []
-    ov_offset = cycle_len // 2
-    prev_month = None
-    for offset in range(cycle_len):
-        d = cycle_start + timedelta(days=offset)
-        # mark new month
-        is_new_month = (d.month != prev_month)
-        prev_month = d.month
-         # compute angle around circle
-        angle = (360.0 / cycle_len) * offset
-        # determine phase
-        if offset < period_len:
-            phase = 'period'
-        elif offset < ov_offset - 5:
-            phase = 'follicular'
-        elif offset < ov_offset:
-            phase = 'fertile'
-        elif offset == ov_offset:
-            phase = 'ovulation'
-        else:
-            phase = 'luteal'
-
-        days_list.append({
-            'date'      : d,
-            'day_num'   : offset + 1,
-            'phase'     : phase,
-            'is_past'   : d < today,
-            'is_today'  : d == today,
-            'new_month' : is_new_month,
-            'angle'     : angle,  # NEW'
-        })
-
-    # 3) (Optional) build events_json...
-    events = []
-
-    return render(request, 'core/calendar.html', {
-        'events_json': mark_safe(json.dumps(events)),
-        'days_list'  : days_list,
-    })
-@login_required(login_url='login')
-def beads_view(request):
-    profile    = Profile.objects.get(user=request.user)
-    last_end   = profile.last_ovulation
-    cycle_len  = profile.cycle_length
-    period_len = profile.period_length
-    today      = date.today()
-
-    # 1) Determine the start of the current cycle
-    days_since  = (today - last_end).days
-    cycle_index = max(0, days_since // cycle_len)
-    cycle_start = last_end + timedelta(days=cycle_index * cycle_len)
-
-    # 2) Determine days in this month
-    year, month = today.year, today.month
-    _, days_in_month = calendar.monthrange(year, month)
-    bead_list = []
-
-    for day in range(1, days_in_month + 1):
-        d = date(year, month, day)
-        offset = (d - cycle_start).days
-        # Only map phases if within the cycle window
-        if 0 <= offset < cycle_len:
             if offset < period_len:
-                phase = 'period'
-            elif offset < (cycle_len//2 - 5):
-                phase = 'follicular'
-            elif offset < cycle_len//2:
-                phase = 'fertile'
-            elif offset == cycle_len//2:
-                phase = 'ovulation'
+                phase = "menstrual"
+            elif offset < ov_offset - 5:
+                phase = "follicular"
+            elif offset < ov_offset:
+                phase = "fertile"
+            elif offset == ov_offset:
+                phase = "ovulation"
             else:
-                phase = 'luteal'
-        else:
-            phase = 'offcycle'  # neutral color
+                phase = "luteal"
 
-        # compute angle for this day around the circle
-        angle = 360.0 * (day - 1) / days_in_month
+            days_list.append({
+                "date": d.isoformat(),
+                "day_num": offset + 1,
+                "phase": phase,
+                "is_past": d < today,
+                "is_today": d == today,
+                "new_month": is_new_month,
+                "angle": angle,
+            })
 
-        bead_list.append({
-            'date'     : d,
-            'day_num'  : day,
-            'phase'    : phase,
-            'is_today' : (d == today),
-            'angle'    : angle,
+        return Response({"days_list": days_list})
+
+
+class DashboardView(APIView):
+    """
+    GET /api/dashboard/
+    Returns hormone curves over a 30-day cycle.
+    """
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        days = list(range(1, 31))
+        fsh = [5 + 2 * math.exp(-((d - 1) / 5) ** 2) + 0.5 * math.sin(d / 30 * 2 * math.pi) for d in days]
+        lh = [1 + 10 * math.exp(-((d - 14) / 1.5) ** 2) for d in days]
+        estradiol = [
+            5 + 8 * math.exp(-((d - 12) / 3) ** 2) + 2 * math.exp(-((d - 21) / 4) ** 2)
+            for d in days
+        ]
+        progesterone = [1 + 5 * math.exp(-((d - 21) / 3) ** 2) for d in days]
+
+        return Response({
+            "days": days,
+            "fsh": fsh,
+            "lh": lh,
+            "estradiol": estradiol,
+            "progesterone": progesterone,
         })
+class UserViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    /api/users/       [GET]
+    /api/users/{pk}/  [GET]
+    """
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-    # (You can still build events_json for the left calendar here…)
+    def get_queryset(self):
+        return User.objects.all().order_by('username')
 
-    return render(request, 'core/calendar.html', {
-        'events_json': mark_safe(json.dumps([])),
-        'days_list'  : bead_list,
-        # plus your existing calendar context…
-    })
-import math
-from django.shortcuts import render
-@login_required(login_url='login')
-def dashboard(request):
-    # Days 1–30
-    days = list(range(1, 31))
+#for fetching conditions registered in the Condition model
+class ConditionViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    /api/conditions/       [GET]
+    /api/conditions/{pk}/  [GET]
+    """
+    queryset = Condition.objects.all()
+    serializer_class = ConditionSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-    # Compute hormone levels with Gaussian-like curves
-    fsh = [5 + 2 * math.exp(-((d-1)/5)**2) + 0.5 * math.sin(d/30*2*math.pi) for d in days]
-    lh = [1 + 10 * math.exp(-((d-14)/1.5)**2) for d in days]
-    estradiol = [5 + 8 * math.exp(-((d-12)/3)**2) + 2 * math.exp(-((d-21)/4)**2) for d in days]
-    progesterone = [1 + 5 * math.exp(-((d-21)/3)**2) for d in days]
-
-    context = {
-        'days': days,
-        'fsh': fsh,
-        'lh': lh,
-        'estradiol': estradiol,
-        'progesterone': progesterone,
-    }
-    return render(request, 'core/dashboard.html', context)
-
-# Landing page
-def home(request):
-    return render(request, 'core/home.html')
-# Login view
-def login_view(request):
-    if request.method == 'POST':
-        form = AuthenticationForm(request, data=request.POST)
-        if form.is_valid():
-            user = form.get_user()
-            login(request, user)
-            return redirect('dashboard')
-    else:
-        form = AuthenticationForm()
-    return render(request, 'core/login.html', {'form': form})
-
-# Logout view
-@login_required(login_url='login')
-def logout_view(request):
-    logout(request)
-    return redirect('/')
+    def get_queryset(self):
+        return Condition.objects.all().order_by('name')
