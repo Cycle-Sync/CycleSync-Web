@@ -61,7 +61,7 @@ const data = {
   },
   navMain: [
     { title: "Dashboard", url: "/app/dashboard", icon: IconDashboard },
-    { title: "Cycle Tracker", url: "#", icon: IconListDetails },
+    { title: "Cycle Tracker", url: "/app/calendar", icon: IconListDetails },
     { title: "Hormone Analytics", url: "#", icon: IconChartBar },
     { title: "Symptoms Log", url: "#", icon: IconFileDescription },
     { title: "Health Insights", url: "#", icon: IconReport },
