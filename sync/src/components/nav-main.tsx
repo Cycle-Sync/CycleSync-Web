@@ -44,12 +44,20 @@ export function NavMain({
         </SidebarMenu>
         <SidebarMenu>
           {items.map((item) => (
-            <SidebarMenuItem key={item.title}>
+           <a href={item.url} className="flex-1"><SidebarMenuItem key={item.title}>
               <SidebarMenuButton tooltip={item.title}>
                 {item.icon && <item.icon />}
-                <span>{item.title}</span>
+                {/* for  link from thr url given */}
+
+                {/* for button with no link */}
+                {/* <Button variant="link" className="flex-1">
+                  {item.title}
+                </Button> */}
+                <span>
+                  {item.title}
+                </span>
               </SidebarMenuButton>
-            </SidebarMenuItem>
+            </SidebarMenuItem></a>
           ))}
         </SidebarMenu>
       </SidebarGroupContent>
