@@ -12,6 +12,7 @@ import CalendarPage  from './pages/CalendarPage';
 import EntriesPage   from './pages/EntriesPage';
 import ProfilePage   from './pages/ProfilePage';
 
+
 function App() {
   const { user } = useAuth();
   return (
@@ -45,6 +46,7 @@ function App() {
             </PrivateRoute>
           }
         />
+        
 
         <Route
           path="*"
