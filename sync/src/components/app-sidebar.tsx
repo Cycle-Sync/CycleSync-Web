@@ -60,7 +60,7 @@ const data = {
     avatar: "/avatars/jane.jpg",
   },
   navMain: [
-    { title: "Dashboard", url: "/", icon: IconDashboard },
+    { title: "Dashboard", url: "/app/dashboard", icon: IconDashboard },
     { title: "Cycle Tracker", url: "#", icon: IconListDetails },
     { title: "Hormone Analytics", url: "#", icon: IconChartBar },
     { title: "Symptoms Log", url: "#", icon: IconFileDescription },
