@@ -7,20 +7,19 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import {
-  Button,
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import {
-  Calendar,
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+
 import {
-  Label,
   Select,
   SelectContent,
   SelectItem,
@@ -32,6 +31,8 @@ import { Textarea } from "@/components/ui/textarea";
 
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { Label } from "@/components/ui/label";
+import { Calendar } from "@/components/ui/calendar";
 import api from "@/api/api";
 
 interface SymptomFormData {
