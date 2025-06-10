@@ -1,6 +1,8 @@
 "use client";
 
 import * as React from "react";
+import { format } from "date-fns";
+import { Calendar as CalendarIcon } from "lucide-react";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
@@ -10,17 +12,26 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-  DatePicker,
+} from "@/components/ui/card";
+import {
+  Calendar,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
   Label,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-  Slider,
-  Textarea,
-  useToast,
-} from "@/components/ui";
+} from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
+import { Textarea } from "@/components/ui/textarea";
+
+import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 import api from "@/api/api";
 
 interface SymptomFormData {
@@ -40,7 +51,6 @@ interface SymptomFormData {
 }
 
 export default function SymptomLoggingPage() {
-  const { toast } = useToast();
   const [formData, setFormData] = React.useState<SymptomFormData>({
     date: new Date(),
     cramps: 0,
@@ -136,18 +146,11 @@ export default function SymptomLoggingPage() {
         notes: formData.notes,
       };
       await api.post("/daily-entries/", payload);
-      toast({
-        title: "Success",
-        description: "Symptoms logged successfully!",
-      });
+      toast.success("Symptoms logged successfully!");
       setLoading(false);
     } catch (err) {
       console.error("Submit Error:", err);
-      toast({
-        title: "Error",
-        description: "Failed to save symptoms. Please try again.",
-        variant: "destructive",
-      });
+      toast.error("Failed to save symptoms. Please try again.");
       setLoading(false);
     }
   };
@@ -167,12 +170,31 @@ export default function SymptomLoggingPage() {
                 <CardTitle>Date</CardTitle>
               </CardHeader>
               <CardContent>
-                <DatePicker
-                  selected={formData.date}
-                  onChange={(date: Date) => handleChange("date", date)}
-                  disabled={fetching || loading}
-                  maxDate={new Date()} // Prevent future dates
-                />
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      data-empty={!formData.date}
+                      className={cn(
+                        "data-[empty=true]:text-muted-foreground w-[280px] justify-start text-left font-normal",
+                        fetching || loading ? "opacity-50 cursor-not-allowed" : ""
+                      )}
+                      disabled={fetching || loading}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {formData.date ? format(formData.date, "PPP") : <span>Pick a date</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={formData.date}
+                      onSelect={(date) => date && handleChange("date", date)}
+                      disabled={(date) => date > new Date() || fetching || loading}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
               </CardContent>
             </Card>
 
