@@ -12,13 +12,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-
 import {
   Select,
   SelectContent,
@@ -27,12 +25,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { Label } from "@/components/ui/label";
-import { Calendar } from "@/components/ui/calendar";
 import api from "@/api/api";
 
 interface SymptomFormData {
@@ -42,11 +40,11 @@ interface SymptomFormData {
   tender_breasts: number;
   headache: number;
   acne: number;
-  mood: string;
+  mood: number;
   stress: number;
   energy: number;
   cervical_mucus: string;
-  sleep_quality: string;
+  sleep_quality: number;
   libido: number;
   notes: string;
 }
@@ -59,14 +57,15 @@ export default function SymptomLoggingPage() {
     tender_breasts: 0,
     headache: 0,
     acne: 0,
-    mood: "neutral",
+    mood: 3,
     stress: 0,
-    energy: 0,
+    energy: 3,
     cervical_mucus: "none",
-    sleep_quality: "fair",
-    libido: 0,
+    sleep_quality: 3,
+    libido: 2,
     notes: "",
   });
+  const [entryId, setEntryId] = React.useState<number | null>(null);
   const [loading, setLoading] = React.useState(false);
   const [fetching, setFetching] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
@@ -80,6 +79,7 @@ export default function SymptomLoggingPage() {
         const { data } = await api.get(`/daily-entries/?date=${dateStr}`);
         if (data.results && data.results.length > 0) {
           const entry = data.results[0];
+          setEntryId(entry.id);
           setFormData({
             date: new Date(entry.date),
             cramps: entry.cramps || 0,
@@ -87,16 +87,16 @@ export default function SymptomLoggingPage() {
             tender_breasts: entry.tender_breasts || 0,
             headache: entry.headache || 0,
             acne: entry.acne || 0,
-            mood: entry.mood || "neutral",
+            mood: entry.mood || 3,
             stress: entry.stress || 0,
-            energy: entry.energy || 0,
+            energy: entry.energy || 3,
             cervical_mucus: entry.cervical_mucus || "none",
-            sleep_quality: entry.sleep_quality || "fair",
-            libido: entry.libido || 0,
+            sleep_quality: entry.sleep_quality || 3,
+            libido: entry.libido || 2,
             notes: entry.notes || "",
           });
         } else {
-          // Reset form for new entry (keep date)
+          setEntryId(null);
           setFormData((prev) => ({
             ...prev,
             cramps: 0,
@@ -104,18 +104,18 @@ export default function SymptomLoggingPage() {
             tender_breasts: 0,
             headache: 0,
             acne: 0,
-            mood: "neutral",
+            mood: 3,
             stress: 0,
-            energy: 0,
+            energy: 3,
             cervical_mucus: "none",
-            sleep_quality: "fair",
-            libido: 0,
+            sleep_quality: 3,
+            libido: 2,
             notes: "",
           }));
         }
         setFetching(false);
       } catch (err) {
-        console.error("Fetch Error:", err);
+        console.error("Fetch Error:", err.response?.data || err);
         setError("Failed to load entry");
         setFetching(false);
       }
@@ -129,6 +129,19 @@ export default function SymptomLoggingPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Validate: require at least one symptom
+    const hasSymptoms = Object.entries(formData).some(
+      ([key, value]) =>
+        key !== "date" &&
+        key !== "notes" &&
+        key !== "cervical_mucus" &&
+        value !== (key === "mood" || key === "energy" || key === "sleep_quality" ? 3 : key === "libido" ? 2 : 0)
+    ) || formData.cervical_mucus !== "none";
+    if (!hasSymptoms) {
+      toast.error("Please log at least one symptom or cervical mucus observation.");
+      return;
+    }
+
     try {
       setLoading(true);
       const payload = {
@@ -146,12 +159,20 @@ export default function SymptomLoggingPage() {
         libido: formData.libido,
         notes: formData.notes,
       };
-      await api.post("/daily-entries/", payload);
-      toast.success("Symptoms logged successfully!");
+      console.log("POST/PATCH Payload:", payload);
+      let response;
+      if (entryId) {
+        response = await api.patch(`/daily-entries/${entryId}/`, payload);
+        toast.success("Symptoms updated successfully!");
+      } else {
+        response = await api.post("/daily-entries/", payload);
+        toast.success("Symptoms logged successfully!");
+      }
+      console.log("Response:", response.data);
       setLoading(false);
     } catch (err) {
-      console.error("Submit Error:", err);
-      toast.error("Failed to save symptoms. Please try again.");
+      console.error("Submit Error:", err.response?.data || err);
+      toast.error("Failed to save symptoms: " + (err.response?.data?.detail || JSON.stringify(err.response?.data) || "Unknown error"));
       setLoading(false);
     }
   };
@@ -235,23 +256,16 @@ export default function SymptomLoggingPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label>Mood</Label>
-                  <Select
-                    value={formData.mood}
-                    onValueChange={(value) => handleChange("mood", value)}
+                  <Label>Mood (0–5, higher is better)</Label>
+                  <Slider
+                    value={[formData.mood]}
+                    onValueChange={([value]) => handleChange("mood", value)}
+                    min={0}
+                    max={5}
+                    step={1}
                     disabled={fetching || loading}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select mood" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="happy">Happy</SelectItem>
-                      <SelectItem value="neutral">Neutral</SelectItem>
-                      <SelectItem value="sad">Sad</SelectItem>
-                      <SelectItem value="anxious">Anxious</SelectItem>
-                      <SelectItem value="irritable">Irritable</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  />
+                  <span className="text-sm text-muted-foreground">{formData.mood}</span>
                 </div>
                 <div className="space-y-2">
                   <Label>Stress (0–5)</Label>
@@ -299,27 +313,24 @@ export default function SymptomLoggingPage() {
                     <SelectContent>
                       <SelectItem value="none">None</SelectItem>
                       <SelectItem value="sticky">Sticky</SelectItem>
+                      <SelectItem value="watery">Watery</SelectItem>
+                      <SelectItem value="egg-white">Egg-White</SelectItem>
                       <SelectItem value="creamy">Creamy</SelectItem>
-                      <SelectItem value="egg_white">Egg White</SelectItem>
+                      <SelectItem value="atypical">Atypical</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label>Sleep Quality</Label>
-                  <Select
-                    value={formData.sleep_quality}
-                    onValueChange={(value) => handleChange("sleep_quality", value)}
+                  <Label>Sleep Quality (0–5, higher is better)</Label>
+                  <Slider
+                    value={[formData.sleep_quality]}
+                    onValueChange={([value]) => handleChange("sleep_quality", value)}
+                    min={0}
+                    max={5}
+                    step={1}
                     disabled={fetching || loading}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select sleep quality" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="poor">Poor</SelectItem>
-                      <SelectItem value="fair">Fair</SelectItem>
-                      <SelectItem value="good">Good</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  />
+                  <span className="text-sm text-muted-foreground">{formData.sleep_quality}</span>
                 </div>
                 <div className="space-y-2">
                   <Label>Libido (0–5)</Label>
@@ -349,7 +360,7 @@ export default function SymptomLoggingPage() {
             {/* Submit Button */}
             <div className="col-span-1 lg:col-span-2 flex justify-end">
               <Button type="submit" disabled={fetching || loading}>
-                {loading ? "Saving..." : "Save Symptoms"}
+                {loading ? "Saving..." : entryId ? "Update Symptoms" : "Save Symptoms"}
               </Button>
             </div>
           </form>
