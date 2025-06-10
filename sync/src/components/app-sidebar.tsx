@@ -87,7 +87,7 @@ const data = {
     },
   ],
   navSecondary: [
-    { title: "Settings", url: "#", icon: IconSettings },
+    { title: "Settings", url: "/app/profile", icon: IconSettings },
     { title: "Help & Support", url: "#", icon: IconHelp },
     { title: "Search Cycles", url: "#", icon: IconSearch },
   ],
