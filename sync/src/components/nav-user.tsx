@@ -98,7 +98,7 @@
 //               </DropdownMenuItem>
 //             </DropdownMenuGroup>
 //             <DropdownMenuSeparator />
-            
+
 //             <DropdownMenuItem>
 //               <IconLogout />
 //               Log out
@@ -177,7 +177,7 @@ export function NavUser() {
   // Construct display name
   const displayName = user.first_name && user.last_name
     ? `${user.first_name} ${user.last_name}`
-    : user.username;
+    : user.user.username;
 
   // Fallback initials for avatar
   const fallbackInitials = displayName
@@ -245,7 +245,10 @@ export function NavUser() {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => {
+              localStorage.removeItem("access_token");
+              window.location.href = "/login";
+            }}>
               <IconLogout />
               Log out
             </DropdownMenuItem>
