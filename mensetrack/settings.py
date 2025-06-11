@@ -26,6 +26,8 @@ INSTALLED_APPS = [
     'django_countries',
     'django_select2',
     'formtools',
+    'corsheaders',  # Add CORS headers
+    "django_redis",
 ]
 
 # DRF settings
