@@ -2,7 +2,7 @@ python-dotenv
 django
 cloudinary
 pillow
-gunicorn==21.2.0
+gunicorn==23.0.0
 psycopg2-binary
 sqlparse==0.5.1
 virtualenv==20.26.3
