@@ -14,6 +14,11 @@ whitenoise
 djangorestframework-simplejwt
 djangorestframework
 django-cors-headers
+django-redis
+redis
+celery
+django-celery-beat
+django-celery-results
 # numpy
 # keras
 # tensorflow
