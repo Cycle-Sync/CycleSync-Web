@@ -1,5 +1,4 @@
 # core/views.py
-
 from datetime import date, timedelta
 import math
 from django.contrib.auth.models import User
@@ -22,6 +21,8 @@ from .serializers import (
     CycleSerializer,
     PredictionSerializer,
 )
+from django.core.cache import cache
+from django.db.models import Avg
 
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -264,36 +265,73 @@ class ConditionViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         return Condition.objects.all().order_by('name')
-    
+
+
+from .tasks import get_dashboard_metrics
+
 class DashboardMetricsView(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
-    def get(self, request):
-        profile = request.user.profile
-        cycles = Cycle.objects.filter(user=request.user)
-        daily_entries = DailyEntry.objects.filter(profile=profile)
-        predictions = Prediction.objects.filter(user=request.user).order_by('-prediction_date')[:5]
+    # def get(self, request):
+    #     user_id = request.user.id
+    #     result = get_dashboard_metrics.delay(user_id)  # Run task asynchronously
+    #     metrics = result.get(timeout=10)  # Wait up to 10 seconds for result
+    #     return Response(metrics)
+    def get_dashboard_metrics(user_id):
+        cache_key = f"dashboard_metrics_{user_id}"
+        metrics = cache.get(cache_key)  # Check cache first
+        if metrics is None:
+            user = User.objects.get(id=user_id)
+            profile = Profile.objects.get(user=user)
+            cycles = Cycle.objects.filter(user=user)
+            daily_entries = DailyEntry.objects.filter(profile=profile)
+            predictions = Prediction.objects.filter(user=user).order_by('-prediction_date')[:5]
+    
+            avg_cycle_length = cycles.aggregate(Avg('cycle_length'))['cycle_length__avg'] or profile.cycle_length or 28
+            symptom_frequency = daily_entries.filter(cramps__gt=0).count()
+            accuracies = [p.accuracy() for p in predictions if p.accuracy() is not None]
+            prediction_accuracy = sum(accuracies) / len(accuracies) if accuracies else None
+            hormone_stability = "N/A"
+    
+            metrics = {
+                "average_cycle_length": round(avg_cycle_length, 1),
+                "symptom_frequency": symptom_frequency,
+                "prediction_accuracy": round(prediction_accuracy, 1) if prediction_accuracy else None,
+                "hormone_stability": hormone_stability,
+            }
+            cache.set(cache_key, metrics, timeout=60 * 15)  # Cache for 15 minutes
+        return metrics
+        
+# class DashboardMetricsView(APIView):
+#     authentication_classes = [JWTAuthentication]
+#     permission_classes = [permissions.IsAuthenticated]
 
-        # Average cycle length
-        avg_cycle_length = cycles.aggregate(models.Avg('cycle_length'))['cycle_length__avg'] or profile.cycle_length or 28
+#     def get(self, request):
+#         profile = request.user.profile
+#         cycles = Cycle.objects.filter(user=request.user)
+#         daily_entries = DailyEntry.objects.filter(profile=profile)
+#         predictions = Prediction.objects.filter(user=request.user).order_by('-prediction_date')[:5]
 
-        # Symptom frequency (e.g., days with cramps)
-        symptom_frequency = daily_entries.filter(cramps__gt=0).count()
+#         # Average cycle length
+#         avg_cycle_length = cycles.aggregate(models.Avg('cycle_length'))['cycle_length__avg'] or profile.cycle_length or 28
 
-        # Prediction accuracy (average days off)
-        accuracies = [p.accuracy() for p in predictions if p.accuracy() is not None]
-        prediction_accuracy = sum(accuracies) / len(accuracies) if accuracies else None
+#         # Symptom frequency (e.g., days with cramps)
+#         symptom_frequency = daily_entries.filter(cramps__gt=0).count()
 
-        # Hormone stability (placeholder until real data exists)
-        hormone_stability = "N/A"
+#         # Prediction accuracy (average days off)
+#         accuracies = [p.accuracy() for p in predictions if p.accuracy() is not None]
+#         prediction_accuracy = sum(accuracies) / len(accuracies) if accuracies else None
 
-        return Response({
-            "average_cycle_length": round(avg_cycle_length, 1),
-            "symptom_frequency": symptom_frequency,
-            "prediction_accuracy": round(prediction_accuracy, 1) if prediction_accuracy else None,
-            "hormone_stability": hormone_stability,
-        })
+#         # Hormone stability (placeholder until real data exists)
+#         hormone_stability = "N/A"
+
+#         return Response({
+#             "average_cycle_length": round(avg_cycle_length, 1),
+#             "symptom_frequency": symptom_frequency,
+#             "prediction_accuracy": round(prediction_accuracy, 1) if prediction_accuracy else None,
+#             "hormone_stability": hormone_stability,
+#         })
 
 
 class CycleCalendarDataView(APIView):
