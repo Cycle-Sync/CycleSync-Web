@@ -4,11 +4,11 @@ import os
 from celery import Celery
 
 # 1) Set the default Django settings module for the 'celery' program.
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mensetrack.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 
 # 2) Instantiate Celery; the first argument (
 #    name) is usually the project name.
-app = Celery("mensetrack")
+app = Celery("config")
 
 # 3) Load broker and backend settings from Django settings,
 #    using a CELERY_ prefix. (We put those in settings.py above.)
