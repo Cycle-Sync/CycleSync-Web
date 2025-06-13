@@ -65,11 +65,14 @@ export default function LandingPage() {
             <Link to="#features" className="text-sm font-medium hover:text-rose-500 transition-colors">
               Features
             </Link>
-            <Link to="#privacy" className="text-sm font-medium hover:text-rose-500 transition-colors">
+            <Link to="/privacy-policy" className="text-sm font-medium hover:text-rose-500 transition-colors">
               Privacy
             </Link>
-            <Link to="#dashboard" className="text-sm font-medium hover:text-rose-500 transition-colors">
-              Dashboard
+            <Link to="/terms-of-service" className="text-sm font-medium hover:text-rose-500 transition-colors">
+              Terms of Service
+            </Link>
+            <Link to="/" className="text-sm font-medium hover:text-rose-500 transition-colors">
+              Home
             </Link>
             <Link to="#faq" className="text-sm font-medium hover:text-rose-500 transition-colors">
               FAQ
