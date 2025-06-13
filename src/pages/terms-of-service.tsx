@@ -25,6 +25,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Badge } from "@/components/ui/badge"
 import { ModeToggle as ThemeToggle } from "@/components/mode-toggle"
 import {Link } from 'react-router-dom'
+import toast, { Toaster } from 'react-hot-toast';
 
 export default function TermsOfServicePage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)

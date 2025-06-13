@@ -21,6 +21,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Badge } from "@/components/ui/badge"
 import { ModeToggle as ThemeToggle } from "@/components/mode-toggle"
+import toast, { Toaster } from 'react-hot-toast';
+
 
 export default function PrivacyPolicyPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
