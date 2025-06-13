@@ -24,7 +24,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Badge } from "@/components/ui/badge"
 import { ModeToggle as ThemeToggle } from "@/components/mode-toggle"
-import {link } from 'react-router-dom'
+import {Link } from 'react-router-dom'
 
 export default function TermsOfServicePage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -69,11 +69,14 @@ export default function TermsOfServicePage() {
             <Link href="/#features" className="text-sm font-medium hover:text-rose-500 transition-colors">
               Features
             </Link>
-            <Link href="/#privacy" className="text-sm font-medium hover:text-rose-500 transition-colors">
+            <Link href="/privacy-policy" className="text-sm font-medium hover:text-rose-500 transition-colors">
               Privacy
             </Link>
-            <Link href="/#dashboard" className="text-sm font-medium hover:text-rose-500 transition-colors">
-              Dashboard
+            <Link href="/terms-of-service" className="text-sm font-medium hover:text-rose-500 transition-colors">
+              Terms of Service
+            </Link>
+            <Link href="/" className="text-sm font-medium hover:text-rose-500 transition-colors">
+              Home
             </Link>
             <Link href="/#faq" className="text-sm font-medium hover:text-rose-500 transition-colors">
               FAQ
