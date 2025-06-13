@@ -69,7 +69,7 @@ export default function PrivacyPolicyPage() {
               Privacy
             </Link>
             <Link href="/terms-of-service" className="text-sm font-medium hover:text-rose-500 transition-colors">
-              Privacy
+              Terms of Service
             </Link>
             <Link href="/" className="text-sm font-medium hover:text-rose-500 transition-colors">
               Home
