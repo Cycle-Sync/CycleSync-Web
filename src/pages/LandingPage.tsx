@@ -450,17 +450,17 @@ export default function LandingPage() {
               <Tabs defaultValue="hormones" className="w-full">
                 <div className="flex justify-center mb-8">
                   <TabsList className="grid w-full max-w-md grid-cols-4">
-                    <TabsTrigger value="hormones">Hormones</TabsTrigger>
+                    <TabsTrigger value="hormones" >Hormones</TabsTrigger>
                     <TabsTrigger value="symptoms">Symptoms</TabsTrigger>
                     <TabsTrigger value="insights">Insights</TabsTrigger>
                     <TabsTrigger value="calendar">Calendar</TabsTrigger>
                   </TabsList>
                 </div>
 
-                <div className="relative mx-auto max-w-5xl">
-                  <div className="absolute -z-10 inset-0 bg-gradient-to-tr from-rose-100 to-purple-100 dark:from-rose-900/20 dark:to-purple-900/20 blur-3xl opacity-30 rounded-full" />
+                <div className="relative mx-auto w-full max-w-2xl">
+                  <div className="absolute -z-10 inset-0 bg-gradient-to-tr from-rose-100 to-purple-100 dark:from-rose-900/20 dark:to-purple-900/20 blur-3xl opacity-30 rounded-full " />
 
-                  <TabsContent value="hormones" className="mt-0">
+                  <TabsContent value="hormones" className="mt-0 " >
                     <HormonalChart />
                   </TabsContent>
 
