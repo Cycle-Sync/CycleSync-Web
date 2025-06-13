@@ -1,79 +1,8 @@
-// import { useNavigate } from 'react-router-dom';
-// import {
-//   Card,
-//   CardContent,
-//   CardFooter,
-//   CardHeader,
-//   CardTitle,
-//   CardDescription,
-// } from '@/components/ui/card';
-// import { Button } from '@/components/ui/button';
-// import { ModeToggle } from '@/components/mode-toggle';
-// import { Check } from 'lucide-react';
-
-// export default function LandingPage() {
-//   const navigate = useNavigate();
-
-//   const features = [
-//     'Personalized cycle tracking',
-//     'Daily symptom logging',
-//     'Predictive calendar view',
-//     'Hormone dashboard & insights',
-//     'Secure JWT-based authentication',
-//   ];
-
-//   return (
-//     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
-//       <header className="flex items-center justify-between p-6">
-//         <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
-//           CycleSync
-//         </h1>
-//         <ModeToggle />
-//       </header>
-
-//       <main className="flex-grow flex items-center justify-center px-6">
-//         <Card className="w-full max-w-4xl">
-//           <CardHeader>
-//             <CardTitle className="text-4xl">Welcome to CycleSync</CardTitle>
-//             <CardDescription className="mt-2 text-lg">
-//               Your all-in-one menstrual cycle tracker—stay in tune with your body,
-//               log daily symptoms, and get predictive insights tailored just for you.
-//             </CardDescription>
-//           </CardHeader>
-
-//           <CardContent>
-//             <ul className="space-y-3">
-//               {features.map((feat) => (
-//                 <li key={feat} className="flex items-center">
-//                   <Check className="mr-2 h-5 w-5 text-green-500" />
-//                   <span className="text-gray-700 dark:text-gray-200">
-//                     {feat}
-//                   </span>
-//                 </li>
-//               ))}
-//             </ul>
-//           </CardContent>
-
-//           <CardFooter className="flex justify-center space-x-4">
-//             <Button size="lg" onClick={() => navigate('/register')}>Get Started</Button>
-//             <Button variant="outline" size="lg" onClick={() => navigate('/login')}>Login</Button>
-//           </CardFooter>
-//         </Card>
-//       </main>
-
-//       <footer className="py-4 text-center text-sm text-gray-500 dark:text-gray-400">
-//         &copy; {new Date().getFullYear()} CycleSync. All rights reserved.
-//       </footer>
-//     </div>
-//   );
-// }
-"use client"
-
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import {
   Shield,
   LineChart,
@@ -87,9 +16,8 @@ import {
   X,
   Heart,
 } from "lucide-react"
-import Link from "next/link"
-import { ThemeToggle } from "@/components/theme-toggle"
-import { ThemeEffect } from "@/components/theme-effect"
+import { Link } from "react-router-dom"
+import { ModeToggle } from "@/components/mode-toggle"
 import { ThemeStatus } from "@/components/theme-status"
 import { HormonalChart } from "@/components/hormonal-chart"
 import { SymptomsChart } from "@/components/symptoms-chart"
@@ -102,39 +30,24 @@ export default function LandingPage() {
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 10) {
-        setIsScrolled(true)
-      } else {
-        setIsScrolled(false)
-      }
+      setIsScrolled(window.scrollY > 10)
     }
-
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
   const fadeIn = {
     hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6 },
-    },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
   }
 
   const staggerContainer = {
     hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-      },
-    },
+    visible: { opacity: 1, transition: { staggerChildren: 0.2 } },
   }
 
   return (
     <div className="flex flex-col min-h-screen bg-rose-50/30 dark:bg-gray-950">
-      <ThemeEffect />
       {/* Header/Navigation */}
       <header
         className={`sticky top-0 z-40 w-full transition-all duration-200 ${
@@ -142,34 +55,34 @@ export default function LandingPage() {
         }`}
       >
         <div className="container flex items-center justify-between h-16 px-4 md:px-6">
-          <Link href="/" className="flex items-center gap-2">
+          <Link to="/" className="flex items-center gap-2">
             <Heart className="h-6 w-6 text-rose-500" />
             <span className="font-bold text-xl">CycleSync</span>
           </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-6">
-            <Link href="#features" className="text-sm font-medium hover:text-rose-500 transition-colors">
+            <Link to="#features" className="text-sm font-medium hover:text-rose-500 transition-colors">
               Features
             </Link>
-            <Link href="#privacy" className="text-sm font-medium hover:text-rose-500 transition-colors">
+            <Link to="#privacy" className="text-sm font-medium hover:text-rose-500 transition-colors">
               Privacy
             </Link>
-            <Link href="#dashboard" className="text-sm font-medium hover:text-rose-500 transition-colors">
+            <Link to="#dashboard" className="text-sm font-medium hover:text-rose-500 transition-colors">
               Dashboard
             </Link>
-            <Link href="#faq" className="text-sm font-medium hover:text-rose-500 transition-colors">
+            <Link to="#faq" className="text-sm font-medium hover:text-rose-500 transition-colors">
               FAQ
             </Link>
           </nav>
 
           <div className="hidden md:flex items-center gap-4">
-            <ThemeToggle />
+            <ModeToggle />
             <Button variant="outline" asChild>
-              <Link href="/login">Log in</Link>
+              <Link to="/login">Log in</Link>
             </Button>
             <Button className="bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-700" asChild>
-              <Link href="/signup">Get Started</Link>
+              <Link to="/signup">Get Started</Link>
             </Button>
           </div>
 
@@ -189,28 +102,28 @@ export default function LandingPage() {
           >
             <div className="container py-4 px-4 flex flex-col gap-4">
               <Link
-                href="#features"
+                to="#features"
                 className="text-sm font-medium p-2 hover:bg-muted rounded-md"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Features
               </Link>
               <Link
-                href="#privacy"
+                to="#privacy"
                 className="text-sm font-medium p-2 hover:bg-muted rounded-md"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Privacy
               </Link>
               <Link
-                href="#dashboard"
+                to="#dashboard"
                 className="text-sm font-medium p-2 hover:bg-muted rounded-md"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Dashboard
               </Link>
               <Link
-                href="#faq"
+                to="#faq"
                 className="text-sm font-medium p-2 hover:bg-muted rounded-md"
                 onClick={() => setMobileMenuOpen(false)}
               >
@@ -218,16 +131,16 @@ export default function LandingPage() {
               </Link>
               <div className="flex flex-col gap-2 pt-2 border-t">
                 <div className="flex justify-end mb-2">
-                  <ThemeToggle variant="toggle" />
+                  <ModeToggle />
                 </div>
                 <Button variant="outline" asChild className="w-full">
-                  <Link href="/login">Log in</Link>
+                  <Link to="/login">Log in</Link>
                 </Button>
                 <Button
                   className="w-full bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-700"
                   asChild
                 >
-                  <Link href="/signup">Get Started</Link>
+                  <Link to="/signup">Get Started</Link>
                 </Button>
               </div>
             </div>
@@ -261,13 +174,13 @@ export default function LandingPage() {
                     className="bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-700"
                     asChild
                   >
-                    <Link href="/signup">
+                    <Link to="/signup">
                       Get Started Free
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Link>
                   </Button>
                   <Button size="lg" variant="outline" asChild>
-                    <Link href="#learn-more">Learn More</Link>
+                    <Link to="#learn-more">Learn More</Link>
                   </Button>
                 </div>
                 <div className="flex items-center gap-4 pt-6">
@@ -299,8 +212,6 @@ export default function LandingPage() {
               </motion.div>
             </div>
           </div>
-
-          {/* Decorative elements */}
           <div className="absolute top-1/2 left-0 w-40 h-40 bg-rose-200 rounded-full blur-3xl opacity-20 -z-10" />
           <div className="absolute bottom-0 right-1/4 w-60 h-60 bg-purple-200 rounded-full blur-3xl opacity-20 -z-10" />
         </section>
@@ -499,7 +410,7 @@ export default function LandingPage() {
                   className="w-fit mt-4 bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-700"
                   asChild
                 >
-                  <Link href="/privacy-policy">
+                  <Link to="/privacy-policy">
                     Read our privacy policy
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
@@ -737,13 +648,13 @@ export default function LandingPage() {
                   className="bg-white text-rose-600 hover:bg-white/90 dark:bg-gray-950 dark:text-rose-500 dark:hover:bg-gray-900"
                   asChild
                 >
-                  <Link href="/signup">
+                  <Link to="/signup">
                     Get Started Free
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>
                 <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10" asChild>
-                  <Link href="/contact">Contact Us</Link>
+                  <Link to="/contact">Contact Us</Link>
                 </Button>
               </div>
               <p className="mt-6 text-sm opacity-80">No credit card required. Free 30-day trial.</p>
@@ -766,7 +677,7 @@ export default function LandingPage() {
               </p>
               <div className="flex gap-4">
                 {["twitter", "instagram", "facebook", "linkedin"].map((social) => (
-                  <Link key={social} href={`#${social}`} className="text-muted-foreground hover:text-foreground">
+                  <Link key={social} to={`#${social}`} className="text-muted-foreground hover:text-foreground">
                     <span className="sr-only">{social}</span>
                     <div className="h-8 w-8 rounded-full bg-background flex items-center justify-center">
                       <div className="h-4 w-4 bg-muted-foreground rounded-sm" />
@@ -782,7 +693,7 @@ export default function LandingPage() {
                 {["Features", "Pricing", "Testimonials", "FAQ", "Privacy"].map((item) => (
                   <li key={item}>
                     <Link
-                      href={`#${item.toLowerCase()}`}
+                      to={`#${item.toLowerCase()}`}
                       className="text-sm text-muted-foreground hover:text-foreground"
                     >
                       {item}
@@ -798,7 +709,7 @@ export default function LandingPage() {
                 {["About Us", "Blog", "Careers", "Press", "Contact"].map((item) => (
                   <li key={item}>
                     <Link
-                      href={`#${item.toLowerCase().replace(" ", "-")}`}
+                      to={`#${item.toLowerCase().replace(" ", "-")}`}
                       className="text-sm text-muted-foreground hover:text-foreground"
                     >
                       {item}
@@ -815,7 +726,7 @@ export default function LandingPage() {
                   (item) => (
                     <li key={item}>
                       <Link
-                        href={`#${item.toLowerCase().replace(" ", "-")}`}
+                        to={`#${item.toLowerCase().replace(" ", "-")}`}
                         className="text-sm text-muted-foreground hover:text-foreground"
                       >
                         {item}
@@ -830,18 +741,18 @@ export default function LandingPage() {
           <div className="mt-12 pt-8 border-t flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-4">
               <p className="text-sm text-muted-foreground">
-                &copy; {new Date().getFullYear()} CycleSync. All rights reserved.
+                © {new Date().getFullYear()} CycleSync. All rights reserved.
               </p>
               <ThemeStatus />
             </div>
             <div className="flex gap-8">
-              <Link href="/privacy-policy" className="text-sm text-muted-foreground hover:text-foreground">
+              <Link to="/privacy-policy" className="text-sm text-muted-foreground hover:text-foreground">
                 Privacy Policy
               </Link>
-              <Link href="/terms-of-service" className="text-sm text-muted-foreground hover:text-foreground">
+              <Link to="/terms-of-service" className="text-sm text-muted-foreground hover:text-foreground">
                 Terms of Service
               </Link>
-              <Link href="/cookie-policy" className="text-sm text-muted-foreground hover:text-foreground">
+              <Link to="/cookie-policy" className="text-sm text-muted-foreground hover:text-foreground">
                 Cookies
               </Link>
             </div>
