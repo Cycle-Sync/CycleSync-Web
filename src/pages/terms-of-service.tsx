@@ -1,7 +1,5 @@
-"use client"
 
 import { useState } from "react"
-import Link from "next/link"
 import { motion } from "framer-motion"
 import {
   FileText,
@@ -25,7 +23,8 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Badge } from "@/components/ui/badge"
-import { ThemeToggle } from "@/components/theme-toggle"
+import { ModeToggle as ThemeToggle } from "@/components/mode-toggle"
+import {link } from 'react-router-dom'
 
 export default function TermsOfServicePage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
