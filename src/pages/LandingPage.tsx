@@ -216,24 +216,25 @@ export default function LandingPage() {
           <div className="absolute bottom-0 right-1/4 w-60 h-60 bg-purple-200 rounded-full blur-3xl opacity-20 -z-10" />
         </section>
 
-        {/* Trusted By Section */}
+        {/* Trusted By Section
         <section className="py-12 border-y bg-white/50 dark:bg-gray-900/50">
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center justify-center gap-4 text-center">
               <h2 className="text-xl font-medium text-muted-foreground">
                 Trusted by women's health experts and privacy advocates
               </h2>
-              <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12 py-6 grayscale opacity-70">
+              {/* partner section here! */}
+              {/* <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12 py-6 grayscale opacity-70">
                 {["Partner 1", "Partner 2", "Partner 3", "Partner 4", "Partner 5"].map((partner, i) => (
                   <div key={i} className="flex items-center justify-center">
                     <div className="h-8 w-24 rounded bg-slate-100 text-black italic text-center" />
                     <span className="sr-only">{partner}</span>
                   </div>
                 ))}
-              </div>
+              </div> 
             </div>
           </div>
-        </section>
+        </section> */}
 
         {/* Features Section */}
         <section id="features" className="py-20 md:py-32 bg-white dark:bg-gray-950">
