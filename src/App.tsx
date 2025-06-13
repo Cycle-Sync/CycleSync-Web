@@ -2,7 +2,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import PrivateRoute from './components/PrivateRoute';
-import AppLayout from './components/AppLayout';
 
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
