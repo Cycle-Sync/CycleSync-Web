@@ -1,11 +1,22 @@
-"use client"
-
-import { useThemeWithStorage } from "@/hooks/use-theme-with-storage"
+import { useTheme } from "@/components/theme-provider"
+import { useState, useEffect } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Moon, Sun, Monitor } from "lucide-react"
 
 export function ThemeStatus() {
-  const { mounted, resolvedTheme, theme } = useThemeWithStorage()
+  const { theme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+  const [resolvedTheme, setResolvedTheme] = useState("light")
+
+  useEffect(() => {
+    setMounted(true)
+    if (theme === "system") {
+      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+      setResolvedTheme(systemTheme)
+    } else {
+      setResolvedTheme(theme)
+    }
+  }, [theme])
 
   if (!mounted) return null
 
