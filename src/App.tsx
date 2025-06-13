@@ -5,12 +5,14 @@ import PrivateRoute from './components/PrivateRoute';
 import AppLayout from './components/AppLayout';
 
 import LandingPage from './pages/LandingPage';
-import LoginPage   from './pages/LoginPage';
+import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
-import CalendarPage  from './pages/CalendarPage';
-import EntriesPage   from './pages/EntriesPage';
-import ProfilePage   from './pages/ProfilePage';
+import CalendarPage from './pages/CalendarPage';
+import EntriesPage from './pages/EntriesPage';
+import ProfilePage from './pages/ProfilePage';
+import PrivacyPolicyPage from "./pages/privacy-policy"
+import TermsOfServicePage from "./pages/terms-of-service"
 
 
 function App() {
@@ -19,7 +21,8 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<LandingPage />} />
-
+        <Route path="/terms-of-service" element={<TermsOfServicePage />} />
+        <Route path="/privacy-policy" element={< PrivacyPolicyPage />} />
         <Route
           path="/login"
           element={user ? <Navigate to="/app/dashboard" replace /> : <LoginPage />}
@@ -35,18 +38,18 @@ function App() {
           element={
             <PrivateRoute>
               {/* <AppLayout> */}
-                <Routes>
-                  <Route path="dashboard" element={<DashboardPage />} />
-                  <Route path="calendar"  element={<CalendarPage />} />
-                  <Route path="entries"   element={<EntriesPage />} />
-                  <Route path="profile"   element={<ProfilePage />} />
-                  <Route index element={<Navigate to="dashboard" replace />} />
-                </Routes>
+              <Routes>
+                <Route path="dashboard" element={<DashboardPage />} />
+                <Route path="calendar" element={<CalendarPage />} />
+                <Route path="entries" element={<EntriesPage />} />
+                <Route path="profile" element={<ProfilePage />} />
+                <Route index element={<Navigate to="dashboard" replace />} />
+              </Routes>
               {/* </AppLayout> */}
             </PrivateRoute>
           }
         />
-        
+
 
         <Route
           path="*"
