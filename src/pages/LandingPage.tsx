@@ -446,6 +446,7 @@ export default function LandingPage() {
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
             >
+              {/* for all those tabs */}
               <Tabs defaultValue="hormones" className="w-full">
                 <div className="flex justify-center mb-8">
                   <TabsList className="grid w-full max-w-md grid-cols-4">
