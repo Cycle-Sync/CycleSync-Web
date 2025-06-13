@@ -1,33 +1,38 @@
-# backend/Dockerfile
+# frontend/Dockerfile
 
-# 1. Use a lightweight Python base
-FROM python:3.11-slim
+# 1) Build stage: install dependencies and build
+FROM node:18-alpine AS builder
 
-# 2. Set environment variables
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
-
-# 3. Create and set working directory
 WORKDIR /app
 
-# 4. Install system dependencies (if any)
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    libpq-dev \
-  && rm -rf /var/lib/apt/lists/*
+# Copy only package.json and lockfiles first
+COPY package.json yarn.lock* package-lock.json* /app/
 
-# 5. Copy requirements and install Python dependencies
-COPY requirements.txt /app/
-RUN pip install --no-cache-dir -r requirements.txt
+# Use yarn if a yarn.lock exists; otherwise, do npm install with --legacy-peer-deps
+RUN if [ -f yarn.lock ]; then \
+      yarn install --frozen-lockfile; \
+    else \
+      npm install --legacy-peer-deps; \
+    fi
 
-# 6. Copy the entire Django project into /app
 COPY . /app/
 
-# 7. Collect static files (if you have any)
-#    RUN python manage.py collectstatic --noinput
+# Build Vite/React (output to /app/dist)
+RUN if [ -f yarn.lock ]; then \
+      yarn build; \
+    else \
+      npm run build; \
+    fi
 
-# 8. Expose port 8000
-EXPOSE 8000
+# 2) Serve stage: use NGINX to serve the built files
+FROM nginx:stable-alpine
 
-# 9. Default command: run Django development server
-CMD ["gunicorn", "djtest.wsgi:application", "--bind", "0.0.0.0:8000"]
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Replace default NGINX config
+RUN rm /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/conf.d/
+
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+# Note: Ensure that the nginx.conf file is properly configured to serve your React app.
