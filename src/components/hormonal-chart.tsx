@@ -1,5 +1,3 @@
-"use client"
-
 import { useState } from "react"
 import { Line, LineChart, XAxis, YAxis, CartesianGrid, Legend, ResponsiveContainer } from "recharts"
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart"
