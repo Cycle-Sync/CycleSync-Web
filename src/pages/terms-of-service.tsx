@@ -59,26 +59,26 @@ export default function TermsOfServicePage() {
         }`}
       >
         <div className="container flex items-center justify-between h-16 px-4 md:px-6">
-          <Link href="/" className="flex items-center gap-2">
+          <Link to="/" className="flex items-center gap-2">
             <Heart className="h-6 w-6 text-rose-500" />
             <span className="font-bold text-xl">CycleSync</span>
           </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-6">
-            <Link href="/#features" className="text-sm font-medium hover:text-rose-500 transition-colors">
+            <Link to="/#features" className="text-sm font-medium hover:text-rose-500 transition-colors">
               Features
             </Link>
-            <Link href="/privacy-policy" className="text-sm font-medium hover:text-rose-500 transition-colors">
+            <Link to="/privacy-policy" className="text-sm font-medium hover:text-rose-500 transition-colors">
               Privacy
             </Link>
-            <Link href="/terms-of-service" className="text-sm font-medium hover:text-rose-500 transition-colors">
+            <Link to="/terms-of-service" className="text-sm font-medium hover:text-rose-500 transition-colors">
               Terms of Service
             </Link>
-            <Link href="/" className="text-sm font-medium hover:text-rose-500 transition-colors">
+            <Link to="/" className="text-sm font-medium hover:text-rose-500 transition-colors">
               Home
             </Link>
-            <Link href="/#faq" className="text-sm font-medium hover:text-rose-500 transition-colors">
+            <Link to="/#faq" className="text-sm font-medium hover:text-rose-500 transition-colors">
               FAQ
             </Link>
           </nav>
@@ -86,10 +86,10 @@ export default function TermsOfServicePage() {
           <div className="hidden md:flex items-center gap-4">
             <ThemeToggle />
             <Button variant="outline" asChild>
-              <Link href="/login">Log in</Link>
+              <Link to="/login">Log in</Link>
             </Button>
             <Button className="bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-700" asChild>
-              <Link href="/signup">Get Started</Link>
+              <Link to="/signup">Get Started</Link>
             </Button>
           </div>
 
@@ -109,28 +109,28 @@ export default function TermsOfServicePage() {
           >
             <div className="container py-4 px-4 flex flex-col gap-4">
               <Link
-                href="/#features"
+                to="/#features"
                 className="text-sm font-medium p-2 hover:bg-muted rounded-md"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Features
               </Link>
               <Link
-                href="/#privacy"
+                to="/#privacy"
                 className="text-sm font-medium p-2 hover:bg-muted rounded-md"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Privacy
               </Link>
               <Link
-                href="/#dashboard"
+                to="/#dashboard"
                 className="text-sm font-medium p-2 hover:bg-muted rounded-md"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Dashboard
               </Link>
               <Link
-                href="/#faq"
+                to="/#faq"
                 className="text-sm font-medium p-2 hover:bg-muted rounded-md"
                 onClick={() => setMobileMenuOpen(false)}
               >
@@ -141,13 +141,13 @@ export default function TermsOfServicePage() {
                   <ThemeToggle variant="toggle" />
                 </div>
                 <Button variant="outline" asChild className="w-full">
-                  <Link href="/login">Log in</Link>
+                  <Link to="/login">Log in</Link>
                 </Button>
                 <Button
                   className="w-full bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-700"
                   asChild
                 >
-                  <Link href="/signup">Get Started</Link>
+                  <Link to="/signup">Get Started</Link>
                 </Button>
               </div>
             </div>
@@ -182,7 +182,7 @@ export default function TermsOfServicePage() {
                 <TabsList className="grid w-full max-w-md grid-cols-3">
                   <TabsTrigger value="terms">Terms of Service</TabsTrigger>
                   <TabsTrigger value="privacy">
-                    <Link href="/privacy-policy">Privacy Policy</Link>
+                    <Link to="/privacy-policy">Privacy Policy</Link>
                   </TabsTrigger>
                   <TabsTrigger value="summary">Summary</TabsTrigger>
                 </TabsList>
@@ -767,10 +767,10 @@ export default function TermsOfServicePage() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button className="bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-700" asChild>
-                  <Link href="/contact">Contact Our Legal Team</Link>
+                  <Link to="/contact">Contact Our Legal Team</Link>
                 </Button>
                 <Button variant="outline" asChild>
-                  <Link href="/privacy-policy">View Privacy Policy</Link>
+                  <Link to="/privacy-policy">View Privacy Policy</Link>
                 </Button>
               </div>
             </div>
@@ -792,7 +792,7 @@ export default function TermsOfServicePage() {
               </p>
               <div className="flex gap-4">
                 {["twitter", "instagram", "facebook", "linkedin"].map((social) => (
-                  <Link key={social} href={`#${social}`} className="text-muted-foreground hover:text-foreground">
+                  <Link key={social} to={`#${social}`} className="text-muted-foreground hover:text-foreground">
                     <span className="sr-only">{social}</span>
                     <div className="h-8 w-8 rounded-full bg-background flex items-center justify-center">
                       <div className="h-4 w-4 bg-muted-foreground rounded-sm" />
@@ -808,7 +808,7 @@ export default function TermsOfServicePage() {
                 {["Features", "Pricing", "Testimonials", "FAQ", "Privacy"].map((item) => (
                   <li key={item}>
                     <Link
-                      href={`/#${item.toLowerCase()}`}
+                      to={`/#${item.toLowerCase()}`}
                       className="text-sm text-muted-foreground hover:text-foreground"
                     >
                       {item}
@@ -824,7 +824,7 @@ export default function TermsOfServicePage() {
                 {["About Us", "Blog", "Careers", "Press", "Contact"].map((item) => (
                   <li key={item}>
                     <Link
-                      href={`/#${item.toLowerCase().replace(" ", "-")}`}
+                      to={`/#${item.toLowerCase().replace(" ", "-")}`}
                       className="text-sm text-muted-foreground hover:text-foreground"
                     >
                       {item}
@@ -841,7 +841,7 @@ export default function TermsOfServicePage() {
                   (item) => (
                     <li key={item}>
                       <Link
-                        href={
+                        to={
                           item === "Terms of Service"
                             ? "/terms-of-service"
                             : item === "Privacy Policy"
@@ -864,13 +864,13 @@ export default function TermsOfServicePage() {
               &copy; {new Date().getFullYear()} CycleSync. All rights reserved.
             </p>
             <div className="flex gap-8">
-              <Link href="/privacy-policy" className="text-sm text-muted-foreground hover:text-foreground">
+              <Link to="/privacy-policy" className="text-sm text-muted-foreground hover:text-foreground">
                 Privacy Policy
               </Link>
-              <Link href="/terms-of-service" className="text-sm text-muted-foreground hover:text-foreground">
+              <Link to="/terms-of-service" className="text-sm text-muted-foreground hover:text-foreground">
                 Terms of Service
               </Link>
-              <Link href="#cookies" className="text-sm text-muted-foreground hover:text-foreground">
+              <Link to="#cookies" className="text-sm text-muted-foreground hover:text-foreground">
                 Cookies
               </Link>
             </div>
