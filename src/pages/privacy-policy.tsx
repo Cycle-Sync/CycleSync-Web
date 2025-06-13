@@ -65,11 +65,14 @@ export default function PrivacyPolicyPage() {
             <Link href="/#features" className="text-sm font-medium hover:text-rose-500 transition-colors">
               Features
             </Link>
-            <Link href="/#privacy" className="text-sm font-medium hover:text-rose-500 transition-colors">
+            <Link href="/privacy-policy" className="text-sm font-medium hover:text-rose-500 transition-colors">
               Privacy
             </Link>
-            <Link href="/#dashboard" className="text-sm font-medium hover:text-rose-500 transition-colors">
-              Dashboard
+            <Link href="/terms-of-service" className="text-sm font-medium hover:text-rose-500 transition-colors">
+              Privacy
+            </Link>
+            <Link href="/" className="text-sm font-medium hover:text-rose-500 transition-colors">
+              Home
             </Link>
             <Link href="/#faq" className="text-sm font-medium hover:text-rose-500 transition-colors">
               FAQ
