@@ -190,7 +190,7 @@ export default function LandingPage() {
                     ))}
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    Trusted by <span className="font-medium text-foreground">10,000+</span> women
+                    Trusted by <span className="font-medium text-foreground">100+</span> women
                   </p>
                 </div>
               </motion.div>
