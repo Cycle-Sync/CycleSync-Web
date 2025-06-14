@@ -1,5 +1,3 @@
-"use client";
-
 import * as React from "react";
 import {
   IconCreditCard,
@@ -64,14 +62,15 @@ export function NavUser() {
   if (!user) return null;
 
   // Construct display name
-  const displayName = user.first_name && user.last_name
-    ? `${user.first_name} ${user.last_name}`
-    : user.user.username;
+  const displayName =
+    user.first_name && user.last_name
+      ? `${user.first_name} ${user.last_name}`
+      : user.username;
 
   // Fallback initials for avatar
   const fallbackInitials = displayName
     .split(" ")
-    .map((n) => n[0])
+    .map((n: string) => n[0])
     .join("")
     .slice(0, 2)
     .toUpperCase();
@@ -87,7 +86,9 @@ export function NavUser() {
             >
               <Avatar className="h-8 w-8 rounded-lg grayscale">
                 <AvatarImage src={user.avatar} alt={displayName} />
-                <AvatarFallback className="rounded-lg">{fallbackInitials}</AvatarFallback>
+                <AvatarFallback className="rounded-lg">
+                  {fallbackInitials}
+                </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{displayName}</span>
@@ -108,7 +109,9 @@ export function NavUser() {
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarImage src={user.avatar} alt={displayName} />
-                  <AvatarFallback className="rounded-lg">{fallbackInitials}</AvatarFallback>
+                  <AvatarFallback className="rounded-lg">
+                    {fallbackInitials}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">{displayName}</span>
@@ -134,10 +137,12 @@ export function NavUser() {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => {
-              localStorage.removeItem("access_token");
-              window.location.href = "/login";
-            }}>
+            <DropdownMenuItem
+              onClick={() => {
+                localStorage.removeItem("access_token");
+                window.location.href = "/login";
+              }}
+            >
               <IconLogout />
               Log out
             </DropdownMenuItem>

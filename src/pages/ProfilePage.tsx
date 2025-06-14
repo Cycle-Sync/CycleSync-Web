@@ -1,12 +1,12 @@
-"use client";
-
+// src/pages/ProfilePage.tsx
 import * as React from "react";
 import { format } from "date-fns";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { Country, CountryDropdown } from "@/components/customized/country-dropdown";
+import { CountryDropdown } from "@/components/customized/country-dropdown";
 import api from "@/api/api";
+import axios from "axios";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -53,12 +53,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import toast, { Toaster } from "react-hot-toast";
 
 interface ProfileData {
   id: number;
   user: { id: number; username: string };
   date_of_birth: string;
-  country: string; // ISO alpha3 code (e.g., "USA")
+  country: string; // ISO alpha3 code
   medical_conditions: { id: number; name: string }[];
   last_ovulation: string | null;
   cycle_type: "regular" | "irregular" | "unknown";
@@ -93,7 +94,7 @@ interface Prediction {
 const personalInfoSchema = z.object({
   username: z.string().min(1, "Username is required"),
   date_of_birth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format"),
-  country: z.string().min(3, "Please select a country"), // ISO alpha3 code
+  country: z.string().min(3, "Please select a country"),
 });
 
 const cycleSettingsSchema = z.object({
@@ -177,14 +178,15 @@ export default function ProfilePage() {
         setPredictions(predictionsData);
 
         setLoading(false);
-      } catch (err) {
+      } catch (err: unknown) {
         console.error("API Error:", err);
         setError("Failed to load profile data");
         setLoading(false);
       }
     };
     fetchData();
-  }, [personalInfoForm, cycleSettingsForm, medicalConditionsForm, preferencesForm]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Handle image upload
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -193,7 +195,7 @@ export default function ProfilePage() {
     }
   };
 
-  // Submit handlers
+  // Submit handlers with proper error narrowing
   const onPersonalInfoSubmit = async (data: z.infer<typeof personalInfoSchema>) => {
     try {
       const formData = new FormData();
@@ -210,9 +212,15 @@ export default function ProfilePage() {
       setProfile(response.data);
       setImageFile(null);
       toast.success("Personal info updated successfully!");
-    } catch (err) {
-      console.error("Update Error:", err.response?.data || err);
-      toast.error("Failed to update personal info: " + (err.response?.data?.detail || JSON.stringify(err.response?.data) || "Unknown error"));
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        console.error("Update Error:", err.response?.data || err);
+        const detail = err.response?.data?.detail ?? JSON.stringify(err.response?.data) ?? "Unknown error";
+        toast.error("Failed to update personal info: " + detail);
+      } else {
+        console.error("Update Error:", err);
+        toast.error("Failed to update personal info: Unknown error");
+      }
     }
   };
 
@@ -221,9 +229,15 @@ export default function ProfilePage() {
       const response = await api.patch(`/profiles/${profile!.id}/`, data);
       setProfile(response.data);
       toast.success("Cycle settings updated successfully!");
-    } catch (err) {
-      console.error("Update Error:", err.response?.data || err);
-      toast.error("Failed to update cycle settings: " + (err.response?.data?.detail || JSON.stringify(err.response?.data) || "Unknown error"));
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        console.error("Update Error:", err.response?.data || err);
+        const detail = err.response?.data?.detail ?? JSON.stringify(err.response?.data) ?? "Unknown error";
+        toast.error("Failed to update cycle settings: " + detail);
+      } else {
+        console.error("Update Error:", err);
+        toast.error("Failed to update cycle settings: Unknown error");
+      }
     }
   };
 
@@ -234,9 +248,15 @@ export default function ProfilePage() {
       });
       setProfile(response.data);
       toast.success("Medical conditions updated successfully!");
-    } catch (err) {
-      console.error("Update Error:", err.response?.data || err);
-      toast.error("Failed to update medical conditions: " + (err.response?.data?.detail || JSON.stringify(err.response?.data) || "Unknown error"));
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        console.error("Update Error:", err.response?.data || err);
+        const detail = err.response?.data?.detail ?? JSON.stringify(err.response?.data) ?? "Unknown error";
+        toast.error("Failed to update medical conditions: " + detail);
+      } else {
+        console.error("Update Error:", err);
+        toast.error("Failed to update medical conditions: Unknown error");
+      }
     }
   };
 
@@ -245,9 +265,15 @@ export default function ProfilePage() {
       const response = await api.patch(`/profiles/${profile!.id}/`, data);
       setProfile(response.data);
       toast.success("Preferences updated successfully!");
-    } catch (err) {
-      console.error("Update Error:", err.response?.data || err);
-      toast.error("Failed to update preferences: " + (err.response?.data?.detail || JSON.stringify(err.response?.data) || "Unknown error"));
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        console.error("Update Error:", err.response?.data || err);
+        const detail = err.response?.data?.detail ?? JSON.stringify(err.response?.data) ?? "Unknown error";
+        toast.error("Failed to update preferences: " + detail);
+      } else {
+        console.error("Update Error:", err);
+        toast.error("Failed to update preferences: Unknown error");
+      }
     }
   };
 
@@ -259,6 +285,7 @@ export default function ProfilePage() {
       <AppSidebar />
       <SidebarInset>
         <SiteHeader />
+        <Toaster />
         <main className="flex flex-col gap-6 p-4 lg:gap-8 lg:p-6">
           <h1 className="text-2xl font-bold">Profile Settings</h1>
           <Tabs defaultValue="personal" className="w-full">
@@ -283,7 +310,9 @@ export default function ProfilePage() {
                       <div className="flex items-center gap-4">
                         <Avatar className="h-24 w-24">
                           <AvatarImage src={profile?.profile_image} alt="Profile" />
-                          <AvatarFallback>{profile?.user.username.charAt(0)}</AvatarFallback>
+                          <AvatarFallback>
+                            {profile?.user.username.charAt(0).toUpperCase()}
+                          </AvatarFallback>
                         </Avatar>
                         <div>
                           <Label htmlFor="profile-image">Profile Image</Label>
@@ -357,18 +386,18 @@ export default function ProfilePage() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Cycle Type</FormLabel>
-                            <Select value={field.value} onValueChange={field.onChange}>
-                              <FormControl>
+                            <FormControl>
+                              <Select value={field.value} onValueChange={field.onChange}>
                                 <SelectTrigger>
                                   <SelectValue placeholder="Select cycle type" />
                                 </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="regular">Regular</SelectItem>
-                                <SelectItem value="irregular">Irregular</SelectItem>
-                                <SelectItem value="unknown">Unknown</SelectItem>
-                              </SelectContent>
-                            </Select>
+                                <SelectContent>
+                                  <SelectItem value="regular">Regular</SelectItem>
+                                  <SelectItem value="irregular">Irregular</SelectItem>
+                                  <SelectItem value="unknown">Unknown</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -548,7 +577,9 @@ export default function ProfilePage() {
                           <TableCell>{format(new Date(cycle.start_date), "PPP")}</TableCell>
                           <TableCell>{format(new Date(cycle.end_date), "PPP")}</TableCell>
                           <TableCell>{cycle.cycle_length} days</TableCell>
-                          <TableCell>{cycle.phase.charAt(0).toUpperCase() + cycle.phase.slice(1)}</TableCell>
+                          <TableCell>
+                            {cycle.phase.charAt(0).toUpperCase() + cycle.phase.slice(1)}
+                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -576,10 +607,22 @@ export default function ProfilePage() {
                     <TableBody>
                       {predictions.map((prediction) => (
                         <TableRow key={prediction.id}>
-                          <TableCell>{format(new Date(prediction.prediction_date), "PPP")}</TableCell>
-                          <TableCell>{format(new Date(prediction.predicted_start), "PPP")}</TableCell>
-                          <TableCell>{prediction.confidence ? `${(prediction.confidence * 100).toFixed(0)}%` : "N/A"}</TableCell>
-                          <TableCell>{prediction.actual_start ? format(new Date(prediction.actual_start), "PPP") : "N/A"}</TableCell>
+                          <TableCell>
+                            {format(new Date(prediction.prediction_date), "PPP")}
+                          </TableCell>
+                          <TableCell>
+                            {format(new Date(prediction.predicted_start), "PPP")}
+                          </TableCell>
+                          <TableCell>
+                            {prediction.confidence
+                              ? `${(prediction.confidence * 100).toFixed(0)}%`
+                              : "N/A"}
+                          </TableCell>
+                          <TableCell>
+                            {prediction.actual_start
+                              ? format(new Date(prediction.actual_start), "PPP")
+                              : "N/A"}
+                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>

@@ -1,7 +1,25 @@
-import { Bar, BarChart, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts"
-import { ChartContainer } from "@/components/ui/chart"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+// src/components/symptoms-chart.tsx
+import * as React from "react";
+import {
+  Bar,
+  BarChart,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
+import type {  TooltipProps } from "recharts";
+import { ChartContainer } from "@/components/ui/chart";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 // Sample data for symptoms tracking
 const symptomData = [
@@ -33,44 +51,90 @@ const symptomData = [
   { day: 26, cramps: 5, mood: 2, energy: 2, headache: 7, bloating: 8, phase: "Luteal" },
   { day: 27, cramps: 6, mood: 2, energy: 1, headache: 8, bloating: 8, phase: "Luteal" },
   { day: 28, cramps: 7, mood: 1, energy: 1, headache: 8, bloating: 8, phase: "Luteal" },
-]
+];
+
+type PhaseDataItem = {
+  phase: string;
+  cramps: number;
+  mood: number;
+  energy: number;
+  headache: number;
+  bloating: number;
+};
 
 export function SymptomsChart() {
   // Group data by phase for better visualization
-  const phaseData = [
-    {
-      phase: "Menstruation",
-      cramps: symptomData.filter((d) => d.phase === "Menstruation").reduce((sum, d) => sum + d.cramps, 0) / 5,
-      mood: symptomData.filter((d) => d.phase === "Menstruation").reduce((sum, d) => sum + d.mood, 0) / 5,
-      energy: symptomData.filter((d) => d.phase === "Menstruation").reduce((sum, d) => sum + d.energy, 0) / 5,
-      headache: symptomData.filter((d) => d.phase === "Menstruation").reduce((sum, d) => sum + d.headache, 0) / 5,
-      bloating: symptomData.filter((d) => d.phase === "Menstruation").reduce((sum, d) => sum + d.bloating, 0) / 5,
-    },
-    {
-      phase: "Follicular",
-      cramps: symptomData.filter((d) => d.phase === "Follicular").reduce((sum, d) => sum + d.cramps, 0) / 8,
-      mood: symptomData.filter((d) => d.phase === "Follicular").reduce((sum, d) => sum + d.mood, 0) / 8,
-      energy: symptomData.filter((d) => d.phase === "Follicular").reduce((sum, d) => sum + d.energy, 0) / 8,
-      headache: symptomData.filter((d) => d.phase === "Follicular").reduce((sum, d) => sum + d.headache, 0) / 8,
-      bloating: symptomData.filter((d) => d.phase === "Follicular").reduce((sum, d) => sum + d.bloating, 0) / 8,
-    },
-    {
-      phase: "Ovulation",
-      cramps: symptomData.filter((d) => d.phase === "Ovulation").reduce((sum, d) => sum + d.cramps, 0) / 1,
-      mood: symptomData.filter((d) => d.phase === "Ovulation").reduce((sum, d) => sum + d.mood, 0) / 1,
-      energy: symptomData.filter((d) => d.phase === "Ovulation").reduce((sum, d) => sum + d.energy, 0) / 1,
-      headache: symptomData.filter((d) => d.phase === "Ovulation").reduce((sum, d) => sum + d.headache, 0) / 1,
-      bloating: symptomData.filter((d) => d.phase === "Ovulation").reduce((sum, d) => sum + d.bloating, 0) / 1,
-    },
-    {
-      phase: "Luteal",
-      cramps: symptomData.filter((d) => d.phase === "Luteal").reduce((sum, d) => sum + d.cramps, 0) / 14,
-      mood: symptomData.filter((d) => d.phase === "Luteal").reduce((sum, d) => sum + d.mood, 0) / 14,
-      energy: symptomData.filter((d) => d.phase === "Luteal").reduce((sum, d) => sum + d.energy, 0) / 14,
-      headache: symptomData.filter((d) => d.phase === "Luteal").reduce((sum, d) => sum + d.headache, 0) / 14,
-      bloating: symptomData.filter((d) => d.phase === "Luteal").reduce((sum, d) => sum + d.bloating, 0) / 14,
-    },
-  ]
+  const phaseData: PhaseDataItem[] = React.useMemo(() => {
+    const group = ["Menstruation", "Follicular", "Ovulation", "Luteal"].map((phase) => {
+      const items = symptomData.filter((d) => d.phase === phase);
+      const count = items.length || 1;
+      const sum = items.reduce(
+        (acc, d) => {
+          acc.cramps += d.cramps;
+          acc.mood += d.mood;
+          acc.energy += d.energy;
+          acc.headache += d.headache;
+          acc.bloating += d.bloating;
+          return acc;
+        },
+        { cramps: 0, mood: 0, energy: 0, headache: 0, bloating: 0 }
+      );
+      return {
+        phase,
+        cramps: sum.cramps / count,
+        mood: sum.mood / count,
+        energy: sum.energy / count,
+        headache: sum.headache / count,
+        bloating: sum.bloating / count,
+      };
+    });
+    return group;
+  }, []);
+
+  // Custom tooltip to guard against undefined and non-number values
+  const renderTooltip = ({
+    active,
+    payload,
+    label,
+  }: TooltipProps<number, string>) => {
+    if (active && Array.isArray(payload) && payload.length) {
+      return (
+        <div className="rounded-lg border bg-background p-2 shadow-sm">
+          <div className="font-medium">{label} Phase</div>
+          <div className="grid grid-cols-2 gap-2 mt-2">
+            {payload.map((p) => {
+              // p.value may be number or string or undefined
+              const raw = p.value;
+              let num: number | null = null;
+              if (typeof raw === "number") {
+                num = raw;
+              } else if (typeof raw === "string") {
+                const parsed = Number(raw);
+                num = isNaN(parsed) ? null : parsed;
+              }
+              const display = num != null ? num.toFixed(1) : "-";
+              return (
+                <div
+                  key={String(p.dataKey)}
+                  className="flex items-center justify-between gap-2"
+                >
+                  <div className="flex items-center gap-1">
+                    <div
+                      className="h-2 w-2 rounded-full"
+                      style={{ backgroundColor: p.color as string }}
+                    />
+                    <span>{p.name}</span>
+                  </div>
+                  <div>{display}</div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <Card className="w-full">
@@ -80,7 +144,9 @@ export function SymptomsChart() {
             <CardTitle>Symptoms Tracking</CardTitle>
             <CardDescription>Monitor your symptoms throughout your cycle</CardDescription>
           </div>
-          <Badge className="bg-rose-100 text-rose-800 hover:bg-rose-100">Current Cycle</Badge>
+          <Badge className="bg-rose-100 text-rose-800 hover:bg-rose-100">
+            Current Cycle
+          </Badge>
         </div>
       </CardHeader>
       <CardContent>
@@ -110,33 +176,21 @@ export function SymptomsChart() {
             }}
           >
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={phaseData} margin={{ top: 5, right: 30, left: 20, bottom: 25 }}>
+              <BarChart
+                data={phaseData}
+                margin={{ top: 5, right: 30, left: 20, bottom: 25 }}
+              >
                 <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
                 <XAxis dataKey="phase" />
-                <YAxis domain={[0, 10]} label={{ value: "Intensity (0-10)", angle: -90, position: "insideLeft" }} />
-                <Tooltip
-                  content={({ active, payload, label }) => {
-                    if (active && payload && payload.length) {
-                      return (
-                        <div className="rounded-lg border bg-background p-2 shadow-sm">
-                          <div className="font-medium">{label} Phase</div>
-                          <div className="grid grid-cols-2 gap-2 mt-2">
-                            {payload.map((p) => (
-                              <div key={p.dataKey} className="flex items-center justify-between gap-2">
-                                <div className="flex items-center gap-1">
-                                  <div className="h-2 w-2 rounded-full" style={{ backgroundColor: p.color }} />
-                                  <span>{p.name}</span>
-                                </div>
-                                <div>{p.value.toFixed(1)}</div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )
-                    }
-                    return null
+                <YAxis
+                  domain={[0, 10]}
+                  label={{
+                    value: "Intensity (0-10)",
+                    angle: -90,
+                    position: "insideLeft",
                   }}
                 />
+                <Tooltip content={renderTooltip} />
                 <Legend />
                 <Bar dataKey="cramps" fill="var(--color-cramps)" />
                 <Bar dataKey="mood" fill="var(--color-mood)" />
@@ -149,5 +203,5 @@ export function SymptomsChart() {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

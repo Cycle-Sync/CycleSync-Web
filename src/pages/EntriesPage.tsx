@@ -1,5 +1,4 @@
-"use client";
-
+// src/pages/EntriesPage.tsx
 import * as React from "react";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
@@ -32,6 +31,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import api from "@/api/api";
+import axios from "axios";
 
 interface SymptomFormData {
   date: Date;
@@ -114,8 +114,12 @@ export default function SymptomLoggingPage() {
           }));
         }
         setFetching(false);
-      } catch (err) {
-        console.error("Fetch Error:", err.response?.data || err);
+      } catch (err: unknown) {
+        if (axios.isAxiosError(err)) {
+          console.error("Fetch Error:", err.response?.data || err);
+        } else {
+          console.error("Fetch Error:", err);
+        }
         setError("Failed to load entry");
         setFetching(false);
       }
@@ -129,14 +133,37 @@ export default function SymptomLoggingPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Validate: require at least one symptom
+    // Validate: require at least one symptom or mucus observation
     const hasSymptoms = Object.entries(formData).some(
-      ([key, value]) =>
-        key !== "date" &&
-        key !== "notes" &&
-        key !== "cervical_mucus" &&
-        value !== (key === "mood" || key === "energy" || key === "sleep_quality" ? 3 : key === "libido" ? 2 : 0)
+      ([key, value]) => {
+        if (key === "date" || key === "notes" || key === "cervical_mucus") {
+          return false;
+        }
+        // default values: mood/energy/sleep_quality default 3, libido default 2, others default 0
+        if (
+          (key === "mood" || key === "energy" || key === "sleep_quality") &&
+          typeof value === "number" &&
+          value !== 3
+        ) {
+          return true;
+        }
+        if (key === "libido" && typeof value === "number" && value !== 2) {
+          return true;
+        }
+        if (
+          typeof value === "number" &&
+          key !== "mood" &&
+          key !== "energy" &&
+          key !== "sleep_quality" &&
+          key !== "libido" &&
+          value !== 0
+        ) {
+          return true;
+        }
+        return false;
+      }
     ) || formData.cervical_mucus !== "none";
+
     if (!hasSymptoms) {
       toast.error("Please log at least one symptom or cervical mucus observation.");
       return;
@@ -160,19 +187,29 @@ export default function SymptomLoggingPage() {
         notes: formData.notes,
       };
       console.log("POST/PATCH Payload:", payload);
-      let response;
       if (entryId) {
-        response = await api.patch(`/daily-entries/${entryId}/`, payload);
+        const response = await api.patch(`/daily-entries/${entryId}/`, payload);
+        console.log("Response:", response.data);
         toast.success("Symptoms updated successfully!");
       } else {
-        response = await api.post("/daily-entries/", payload);
+        const response = await api.post("/daily-entries/", payload);
+        console.log("Response:", response.data);
+        setEntryId(response.data.id);
         toast.success("Symptoms logged successfully!");
       }
-      console.log("Response:", response.data);
       setLoading(false);
-    } catch (err) {
-      console.error("Submit Error:", err.response?.data || err);
-      toast.error("Failed to save symptoms: " + (err.response?.data?.detail || JSON.stringify(err.response?.data) || "Unknown error"));
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        console.error("Submit Error:", err.response?.data || err);
+        const detail =
+          err.response?.data?.detail ??
+          JSON.stringify(err.response?.data) ??
+          "Unknown error";
+        toast.error("Failed to save symptoms: " + detail);
+      } else {
+        console.error("Submit Error:", err);
+        toast.error("Failed to save symptoms: Unknown error");
+      }
       setLoading(false);
     }
   };
@@ -232,20 +269,27 @@ export default function SymptomLoggingPage() {
                   { label: "Tender Breasts", field: "tender_breasts" },
                   { label: "Headache", field: "headache" },
                   { label: "Acne", field: "acne" },
-                ].map((item) => (
-                  <div key={item.field} className="space-y-2">
-                    <Label>{item.label} (0–5)</Label>
-                    <Slider
-                      value={[formData[item.field as keyof SymptomFormData] as number]}
-                      onValueChange={([value]) => handleChange(item.field as keyof SymptomFormData, value)}
-                      min={0}
-                      max={5}
-                      step={1}
-                      disabled={fetching || loading}
-                    />
-                    <span className="text-sm text-muted-foreground">{formData[item.field as keyof SymptomFormData]}</span>
-                  </div>
-                ))}
+                ].map((item) => {
+                  const field = item.field as keyof SymptomFormData;
+                  const value = formData[field];
+                  // value is number for these fields
+                  return (
+                    <div key={item.field} className="space-y-2">
+                      <Label>{item.label} (0–5)</Label>
+                      <Slider
+                        value={[value as number]}
+                        onValueChange={([v]) => handleChange(field, v)}
+                        min={0}
+                        max={5}
+                        step={1}
+                        disabled={fetching || loading}
+                      />
+                      <span className="text-sm text-muted-foreground">
+                        {String(value)}
+                      </span>
+                    </div>
+                  );
+                })}
               </CardContent>
             </Card>
 
@@ -265,7 +309,9 @@ export default function SymptomLoggingPage() {
                     step={1}
                     disabled={fetching || loading}
                   />
-                  <span className="text-sm text-muted-foreground">{formData.mood}</span>
+                  <span className="text-sm text-muted-foreground">
+                    {String(formData.mood)}
+                  </span>
                 </div>
                 <div className="space-y-2">
                   <Label>Stress (0–5)</Label>
@@ -277,7 +323,9 @@ export default function SymptomLoggingPage() {
                     step={1}
                     disabled={fetching || loading}
                   />
-                  <span className="text-sm text-muted-foreground">{formData.stress}</span>
+                  <span className="text-sm text-muted-foreground">
+                    {String(formData.stress)}
+                  </span>
                 </div>
                 <div className="space-y-2">
                   <Label>Energy (0–5)</Label>
@@ -289,7 +337,9 @@ export default function SymptomLoggingPage() {
                     step={1}
                     disabled={fetching || loading}
                   />
-                  <span className="text-sm text-muted-foreground">{formData.energy}</span>
+                  <span className="text-sm text-muted-foreground">
+                    {String(formData.energy)}
+                  </span>
                 </div>
               </CardContent>
             </Card>
@@ -330,7 +380,9 @@ export default function SymptomLoggingPage() {
                     step={1}
                     disabled={fetching || loading}
                   />
-                  <span className="text-sm text-muted-foreground">{formData.sleep_quality}</span>
+                  <span className="text-sm text-muted-foreground">
+                    {String(formData.sleep_quality)}
+                  </span>
                 </div>
                 <div className="space-y-2">
                   <Label>Libido (0–5)</Label>
@@ -342,7 +394,9 @@ export default function SymptomLoggingPage() {
                     step={1}
                     disabled={fetching || loading}
                   />
-                  <span className="text-sm text-muted-foreground">{formData.libido}</span>
+                  <span className="text-sm text-muted-foreground">
+                    {String(formData.libido)}
+                  </span>
                 </div>
                 <div className="space-y-2">
                   <Label>Notes</Label>
@@ -360,7 +414,11 @@ export default function SymptomLoggingPage() {
             {/* Submit Button */}
             <div className="col-span-1 lg:col-span-2 flex justify-end">
               <Button type="submit" disabled={fetching || loading}>
-                {loading ? "Saving..." : entryId ? "Update Symptoms" : "Save Symptoms"}
+                {loading
+                  ? "Saving..."
+                  : entryId
+                  ? "Update Symptoms"
+                  : "Save Symptoms"}
               </Button>
             </div>
           </form>

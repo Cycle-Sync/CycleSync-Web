@@ -24,8 +24,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Badge } from "@/components/ui/badge"
 import { ModeToggle as ThemeToggle } from "@/components/mode-toggle"
-import {Link } from 'react-router-dom'
-import toast, { Toaster } from 'react-hot-toast';
+import { Link } from 'react-router-dom'
 
 export default function TermsOfServicePage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -42,22 +41,21 @@ export default function TermsOfServicePage() {
     })
   }
 
-  const fadeIn = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6 },
-    },
-  }
+  // const fadeIn = {
+  //   hidden: { opacity: 0, y: 20 },
+  //   visible: {
+  //     opacity: 1,
+  //     y: 0,
+  //     transition: { duration: 0.6 },
+  //   },
+  // }
 
   return (
     <div className="flex flex-col min-h-screen bg-rose-50/30 dark:bg-gray-950">
       {/* Header/Navigation */}
       <header
-        className={`sticky top-0 z-40 w-full transition-all duration-200 ${
-          isScrolled ? "bg-white/80 dark:bg-gray-950/80 backdrop-blur-md shadow-sm" : "bg-transparent"
-        }`}
+        className={`sticky top-0 z-40 w-full transition-all duration-200 ${isScrolled ? "bg-white/80 dark:bg-gray-950/80 backdrop-blur-md shadow-sm" : "bg-transparent"
+          }`}
       >
         <div className="container flex items-center justify-between h-16 px-4 md:px-6">
           <Link to="/" className="flex items-center gap-2">
@@ -139,7 +137,7 @@ export default function TermsOfServicePage() {
               </Link>
               <div className="flex flex-col gap-2 pt-2 border-t">
                 <div className="flex justify-end mb-2">
-                  <ThemeToggle variant="toggle" />
+                  <ThemeToggle />
                 </div>
                 <Button variant="outline" asChild className="w-full">
                   <Link to="/login">Log in</Link>
@@ -746,7 +744,12 @@ export default function TermsOfServicePage() {
                       </p>
                       <Button
                         className="mt-4 bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-700"
-                        onClick={() => document.querySelector('[data-value="terms"]')?.click()}
+                        onClick={() => {
+                          const el = document.querySelector<HTMLElement>('[data-value="terms"]');
+                          el?.click();
+                        }}
+
+                      // onClick={() => document.querySelector('[data-value="terms"]')?.click()}
                       >
                         Read Full Terms
                       </Button>
