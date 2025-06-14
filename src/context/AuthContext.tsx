@@ -1,17 +1,19 @@
 // src/context/AuthContext.tsx
 import {
   createContext,
-  ReactNode,
   useContext,
   useEffect,
   useState,
 } from 'react';
+import type { ReactNode} from 'react';
 import {
   loginUser,
   registerUser,
   logoutUser as apiLogout,
   fetchCurrentUser,
-  UserData,
+} from '../api/auth';
+import type {
+  UserData
 } from '../api/auth';
 import { getStoredAccessToken, getStoredRefreshToken, clearTokens } from '../api/api';
 

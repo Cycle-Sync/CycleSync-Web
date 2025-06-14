@@ -1,88 +1,4 @@
-// import { IconTrendingDown, IconTrendingUp } from "@tabler/icons-react"
-
-// import { Badge } from "@/components/ui/badge"
-// import {
-//   Card,
-//   CardAction,
-//   CardDescription,
-//   CardFooter,
-//   CardHeader,
-//   CardTitle,
-//   CardContent,
-// } from "@/components/ui/card"
-
-// export function SectionCards() {
-//   return (
-//     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-//       <Card>
-//         <CardHeader>
-//           <CardTitle>Average Cycle Length</CardTitle>
-//           <CardDescription>Based on the last 6 cycles</CardDescription>
-//         </CardHeader>
-//         <CardContent>
-//           <div className="text-2xl font-bold">28.3 days</div>
-//           <Badge variant="outline" className="mt-2">+0.5 days</Badge>
-//         </CardContent>
-//         <CardFooter>
-//           <div className="flex gap-2 leading-none font-medium">
-//             Stable cycle duration
-//             <IconTrendingUp className="size-4" />
-//           </div>
-//         </CardFooter>
-//       </Card>
-//       <Card>
-//         <CardHeader>
-//           <CardTitle>Symptom Frequency</CardTitle>
-//           <CardDescription>Common symptoms this cycle</CardDescription>
-//         </CardHeader>
-//         <CardContent>
-//           <div className="text-2xl font-bold">3 symptoms</div>
-//           <Badge variant="outline" className="mt-2">Cramps, Mood Swings</Badge>
-//         </CardContent>
-//         <CardFooter>
-//           <div className="flex gap-2 leading-none font-medium">
-//             Monitor for patterns
-//             <IconTrendingDown className="size-4" />
-//           </div>
-//         </CardFooter>
-//       </Card>
-//       <Card>
-//         <CardHeader>
-//           <CardTitle>Hormone Stability</CardTitle>
-//           <CardDescription>Estrogen & Progesterone variance</CardDescription>
-//         </CardHeader>
-//         <CardContent>
-//           <div className="text-2xl font-bold">Low Variance</div>
-//           <Badge variant="outline" className="mt-2">+2.5%</Badge>
-//         </CardContent>
-//         <CardFooter>
-//           <div className="flex gap-2 leading-none font-medium">
-//             Within normal range
-//             <IconTrendingUp className="size-4" />
-//           </div>
-//         </CardFooter>
-//       </Card>
-//       <Card>
-//         <CardHeader>
-//           <CardTitle>Prediction Accuracy</CardTitle>
-//           <CardDescription>Ovulation & period predictions</CardDescription>
-//         </CardHeader>
-//         <CardContent>
-//           <div className="text-2xl font-bold">92%</div>
-//           <Badge variant="outline" className="mt-2">+4%</Badge>
-//         </CardContent>
-//         <CardFooter>
-//           <div className="flex gap-2 leading-none font-medium">
-//             Reliable predictions
-//             <IconTrendingUp className="size-4" />
-//           </div>
-//         </CardFooter>
-//       </Card>
-//     </div>
-//   );
-// }
-"use client";
-
+// src/components/section-cards.tsx
 import * as React from "react";
 import { IconTrendingDown, IconTrendingUp } from "@tabler/icons-react";
 import { Badge } from "@/components/ui/badge";
@@ -130,9 +46,9 @@ export function SectionCards() {
           api.get("/daily-entries/"),
           api.get("/dashboard/"),
         ]);
-        const cycles = cyclesResponse.data;
-        const entries = entriesResponse.data;
-        const hormoneData = hormoneResponse.data;
+        const cycles: any[] = cyclesResponse.data;
+        const entries: any[] = entriesResponse.data;
+        const hormoneData: { estradiol: number[]; progesterone: number[] } = hormoneResponse.data;
 
         // Compute average cycle length
         const lastSixCycles = cycles.slice(-6);
@@ -147,25 +63,37 @@ export function SectionCards() {
         // Compute symptom frequency
         const currentCycle = cycles[cycles.length - 1];
         const cycleEntries = entries.filter((entry: any) => entry.cycle?.id === currentCycle?.id);
-        const symptoms = cycleEntries.flatMap((entry: any) =>
-          [
+
+        // Extract symptoms as string[], filtering out null/undefined
+        const symptoms: string[] = cycleEntries.flatMap((entry: any) => {
+          const arr: (string | null)[] = [
             entry.cramps ? `Cramps: ${entry.cramps}` : null,
             entry.bloating ? `Bloating: ${entry.bloating}` : null,
             entry.mood ? `Mood: ${entry.mood}` : null,
             entry.cervical_mucus ? `Cervical Mucus: ${entry.cervical_mucus}` : null,
-          ].filter(Boolean)
-        );
+          ];
+          return arr.filter((v): v is string => Boolean(v));
+        });
         const symptomCount = symptoms.length;
-        const commonSymptoms = [...new Set(symptoms.map((s: string) => s.split(":")[0]))].slice(0, 2);
+
+        // Derive first two common symptom names
+        const commonSymptoms: string[] = [
+          ...new Set(symptoms.map((s) => s.split(":")[0]))
+        ].slice(0, 2);
 
         // Compute hormone stability (simplified variance)
         const estradiolVariance = calculateVariance(hormoneData.estradiol);
         const progesteroneVariance = calculateVariance(hormoneData.progesterone);
-        const varianceLevel = estradiolVariance + progesteroneVariance < 100 ? "Low" : "High";
+        const totalVariance = estradiolVariance + progesteroneVariance;
+        const varianceLevel = totalVariance < 100 ? "Low" : "High";
         const prevEstradiol = hormoneData.estradiol.slice(0, -1);
         const prevProgesterone = hormoneData.progesterone.slice(0, -1);
-        const prevVariance = prevEstradiol.length ? calculateVariance(prevEstradiol) + calculateVariance(prevProgesterone) : 0;
-        const varianceChange = prevVariance ? ((estradiolVariance + progesteroneVariance - prevVariance) / prevVariance) * 100 : 0;
+        const prevVariance = prevEstradiol.length
+          ? calculateVariance(prevEstradiol) + calculateVariance(prevProgesterone)
+          : 0;
+        const varianceChange = prevVariance
+          ? ((totalVariance - prevVariance) / prevVariance) * 100
+          : 0;
 
         // Compute prediction accuracy (placeholder)
         const accuracy = 92; // Replace with actual logic if available
@@ -199,7 +127,7 @@ export function SectionCards() {
   }, []);
 
   // Helper function to calculate variance
-  const calculateVariance = (values: number[]) => {
+  const calculateVariance = (values: number[]): number => {
     if (values.length === 0) return 0;
     const mean = values.reduce((sum, val) => sum + val, 0) / values.length;
     return values.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / values.length;

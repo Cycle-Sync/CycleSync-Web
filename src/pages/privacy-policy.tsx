@@ -21,7 +21,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Badge } from "@/components/ui/badge"
 import { ModeToggle as ThemeToggle } from "@/components/mode-toggle"
-import toast, { Toaster } from 'react-hot-toast';
 
 
 export default function PrivacyPolicyPage() {
@@ -39,14 +38,14 @@ export default function PrivacyPolicyPage() {
     })
   }
 
-  const fadeIn = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6 },
-    },
-  }
+  // const fadeIn = {
+  //   hidden: { opacity: 0, y: 20 },
+  //   visible: {
+  //     opacity: 1,
+  //     y: 0,
+  //     transition: { duration: 0.6 },
+  //   },
+  // }
 
   return (
     <div className="flex flex-col min-h-screen bg-rose-50/30 dark:bg-gray-950">
@@ -136,7 +135,7 @@ export default function PrivacyPolicyPage() {
               </Link>
               <div className="flex flex-col gap-2 pt-2 border-t">
                 <div className="flex justify-end mb-2">
-                  <ThemeToggle variant="toggle" />
+                  <ThemeToggle/>
                 </div>
                 <Button variant="outline" asChild className="w-full">
                   <Link to="/login">Log in</Link>
