@@ -183,10 +183,15 @@ export default function LandingPage() {
                     </Link>
                   </Button>
                    <WaitlistButton size="lg" variant="outline" />
-
+<WaitlistButton   size="lg"
+                    className="bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-700"
+                    asChild >
+                    Get Started Free
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                  </WaitlistButton>
 
       {/* <WaitlistButton>Notify Me!</WaitlistButton> */}
-                  {/* <WaitlistButton size="lg" variant="outline" apiBaseUrl="http://localhost:8000/api">
+{/*                   <WaitlistButton size="lg" variant="outline" apiBaseUrl="http://localhost:8000/api">
                     Join Waitlist
                   </WaitlistButton> */}
                   {/* <Button size="lg" variant="outline" asChild>
