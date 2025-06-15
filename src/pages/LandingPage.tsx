@@ -177,7 +177,7 @@ export default function LandingPage() {
                     className="bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-700"
                     asChild
                   >
-                    <Link to="/signup">
+                    <Link to="/login">
                       Get Started Free
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Link>
@@ -520,19 +520,19 @@ export default function LandingPage() {
                 {
                   quote:
                     "CycleSync has completely changed how I understand my body. The privacy features give me peace of mind that my data is secure.",
-                  name: "Sarah K.",
-                  title: "Using CycleSync for 1 year",
+                  name: "Anonymized User",
+                  title: "Using CycleSync for 2 months",
                 },
                 {
                   quote:
                     "As someone who values privacy, I appreciate that CycleSync takes data security seriously. The insights are incredibly accurate too!",
-                  name: "Michelle T.",
-                  title: "Using CycleSync for 8 months",
+                  name: "Anonymized User",
+                  title: "Using CycleSync for 5 months",
                 },
                 {
                   quote:
                     "The hormonal analytics have helped me identify patterns I never noticed before. It's like having a personal health assistant.",
-                  name: "Jessica L.",
+                  name: "Anonymized User",
                   title: "Using CycleSync for 6 months",
                 },
               ].map((testimonial, i) => (
