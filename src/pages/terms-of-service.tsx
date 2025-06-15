@@ -608,7 +608,7 @@ export default function TermsOfServicePage() {
                         <p>If you have any questions about these Terms, please contact us at:</p>
                         <div className="bg-muted p-4 rounded-lg">
                           <p>Email: legal@cyclesync.com</p>
-                          <p>Address: 123 Privacy Lane, Health City, CA 94000, USA</p>
+                          {/* <p>Address: 123 Privacy Lane, Health City, CA 94000, USA</p> */}
                         </div>
                       </AccordionContent>
                     </AccordionItem>

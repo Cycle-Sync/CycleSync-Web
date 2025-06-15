@@ -415,8 +415,8 @@ export default function PrivacyPolicyPage() {
                             data portability, the right to be forgotten, and other rights.
                           </li>
                           <li>
-                            <span className="font-medium">CCPA/CPRA Compliance:</span> For California residents, we
-                            comply with the California Consumer Privacy Act (CCPA) and California Privacy Rights Act
+                            <span className="font-medium">CCPA/CPRA Compliance:</span> we
+                            comply with the International Consumer Privacy Act (CCPA) and International Privacy Rights Act
                             (CPRA), providing specific rights regarding your personal information.
                           </li>
                           <li>
@@ -464,7 +464,7 @@ export default function PrivacyPolicyPage() {
                         </p>
                         <div className="bg-muted p-4 rounded-lg">
                           <p>Email: privacy@cyclesync.com</p>
-                          <p>Address: 123 Privacy Lane, Health City, CA 94000, USA</p>
+                          {/* <p>Address: 123 Privacy Lane, Health City, CA 94000, USA</p> */}
                           <p>Data Protection Officer: dpo@cyclesync.com</p>
                         </div>
                         <p>
