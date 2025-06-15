@@ -1,5 +1,5 @@
 import { useState } from "react"
-import {Link} from "react-router-dom"
+import { Link } from "react-router-dom"
 import { motion } from "framer-motion"
 import {
   Shield,
@@ -21,7 +21,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Badge } from "@/components/ui/badge"
 import { ModeToggle as ThemeToggle } from "@/components/mode-toggle"
-
+import { WaitlistButton } from "@/components/waitlist-button"
 
 export default function PrivacyPolicyPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -51,9 +51,8 @@ export default function PrivacyPolicyPage() {
     <div className="flex flex-col min-h-screen bg-rose-50/30 dark:bg-gray-950">
       {/* Header/Navigation */}
       <header
-        className={`sticky top-0 z-40 w-full transition-all duration-200 ${
-          isScrolled ? "bg-white/80 dark:bg-gray-950/80 backdrop-blur-md shadow-sm" : "bg-transparent"
-        }`}
+        className={`sticky top-0 z-40 w-full transition-all duration-200 ${isScrolled ? "bg-white/80 dark:bg-gray-950/80 backdrop-blur-md shadow-sm" : "bg-transparent"
+          }`}
       >
         <div className="container flex items-center justify-between h-16 px-4 md:px-6">
           <Link to="/" className="flex items-center gap-2">
@@ -85,9 +84,12 @@ export default function PrivacyPolicyPage() {
             <Button variant="outline" asChild>
               <Link to="/login">Log in</Link>
             </Button>
-            <Button className="bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-700" asChild>
+            <WaitlistButton className="bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-700" asChild>
+              Get Started Free
+            </WaitlistButton>
+            {/* <Button className="bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-700" asChild>
               <Link to="/signup">Get Started</Link>
-            </Button>
+            </Button> */}
           </div>
 
           {/* Mobile menu button */}
@@ -135,17 +137,20 @@ export default function PrivacyPolicyPage() {
               </Link>
               <div className="flex flex-col gap-2 pt-2 border-t">
                 <div className="flex justify-end mb-2">
-                  <ThemeToggle/>
+                  <ThemeToggle />
                 </div>
                 <Button variant="outline" asChild className="w-full">
                   <Link to="/login">Log in</Link>
                 </Button>
-                <Button
+                <WaitlistButton className="bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-700" asChild>
+                  Get Started Free
+                </WaitlistButton>
+                {/* <Button
                   className="w-full bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-700"
                   asChild
                 >
                   <Link to="/signup">Get Started</Link>
-                </Button>
+                </Button> */}
               </div>
             </div>
           </motion.div>

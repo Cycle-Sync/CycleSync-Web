@@ -25,6 +25,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Badge } from "@/components/ui/badge"
 import { ModeToggle as ThemeToggle } from "@/components/mode-toggle"
 import { Link } from 'react-router-dom'
+import { WaitlistButton } from "@/components/waitlist-button"
 
 export default function TermsOfServicePage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -87,9 +88,12 @@ export default function TermsOfServicePage() {
             <Button variant="outline" asChild>
               <Link to="/login">Log in</Link>
             </Button>
-            <Button className="bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-700" asChild>
+            <WaitlistButton className="bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-700" asChild>
+              Get Started Free
+            </WaitlistButton>
+            {/* <Button className="bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-700" asChild>
               <Link to="/signup">Get Started</Link>
-            </Button>
+            </Button> */}
           </div>
 
           {/* Mobile menu button */}
