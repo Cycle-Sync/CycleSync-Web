@@ -50,9 +50,8 @@ export default function LandingPage() {
     <div className="flex flex-col min-h-screen bg-rose-50/30 dark:bg-gray-950">
       {/* Header/Navigation */}
       <header
-        className={`sticky top-0 z-40 w-full transition-all duration-200 ${
-          isScrolled ? "bg-white/80 dark:bg-gray-950/80 backdrop-blur-md shadow-sm" : "bg-transparent"
-        }`}
+        className={`sticky top-0 z-40 w-full transition-all duration-200 ${isScrolled ? "bg-white/80 dark:bg-gray-950/80 backdrop-blur-md shadow-sm" : "bg-transparent"
+          }`}
       >
         <div className="container flex items-center justify-between h-16 px-4 md:px-6">
           <Link to="/" className="flex items-center gap-2">
@@ -84,9 +83,12 @@ export default function LandingPage() {
             <Button variant="outline" asChild>
               <Link to="/login">Log in</Link>
             </Button>
-            <Button className="bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-700" asChild>
+            {/* <Button className="bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-700" asChild>
               <Link to="/signup">Get Started</Link>
-            </Button>
+            </Button> */}
+            <WaitlistButton className="bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-700" asChild>
+              Get Started Free
+            </WaitlistButton>
           </div>
 
           {/* Mobile menu button */}
@@ -172,7 +174,13 @@ export default function LandingPage() {
                   insights, and comprehensive health analytics.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 pt-4">
-                  <Button
+                  <WaitlistButton size="lg"
+                    className="bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-700"
+                    asChild >
+                    Get Started Free
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </WaitlistButton>
+                  {/* <Button
                     size="lg"
                     className="bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-700"
                     asChild
@@ -181,17 +189,12 @@ export default function LandingPage() {
                       Get Started Free
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Link>
-                  </Button>
-                   <WaitlistButton size="lg" variant="outline" />
-<WaitlistButton   size="lg"
-                    className="bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-700"
-                    asChild >
-                    Get Started Free
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                  </WaitlistButton>
+                  </Button> */}
+                  <WaitlistButton size="lg" variant="outline" />
 
-      {/* <WaitlistButton>Notify Me!</WaitlistButton> */}
-{/*                   <WaitlistButton size="lg" variant="outline" apiBaseUrl="http://localhost:8000/api">
+
+                  {/* <WaitlistButton>Notify Me!</WaitlistButton> */}
+                  {/*                   <WaitlistButton size="lg" variant="outline" apiBaseUrl="http://localhost:8000/api">
                     Join Waitlist
                   </WaitlistButton> */}
                   {/* <Button size="lg" variant="outline" asChild>
@@ -239,7 +242,7 @@ export default function LandingPage() {
                 Trusted by women's health experts and privacy advocates
               </h2>
               {/* partner section here! */}
-              {/* <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12 py-6 grayscale opacity-70">
+        {/* <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12 py-6 grayscale opacity-70">
                 {["Partner 1", "Partner 2", "Partner 3", "Partner 4", "Partner 5"].map((partner, i) => (
                   <div key={i} className="flex items-center justify-center">
                     <div className="h-8 w-24 rounded bg-slate-100 text-black italic text-center" />
@@ -660,7 +663,7 @@ export default function LandingPage() {
                 Join thousands of women who are taking control of their menstrual health with privacy and confidence.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button
+                {/* <Button
                   size="lg"
                   className="bg-white text-rose-600 hover:bg-white/90 dark:bg-gray-950 dark:text-rose-500 dark:hover:bg-gray-900"
                   asChild
@@ -669,7 +672,13 @@ export default function LandingPage() {
                     Get Started Free
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
-                </Button>
+                </Button> */}
+                <WaitlistButton size="lg"
+                  className="bg-white text-rose-600 hover:bg-white/90 dark:bg-gray-950 dark:text-rose-500 dark:hover:bg-gray-900"
+                  asChild >
+                  Get Started Free
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </WaitlistButton>
                 <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10" asChild>
                   <Link to="/contact">Contact Us</Link>
                 </Button>
