@@ -23,7 +23,7 @@ import { HormonalChart } from "@/components/hormonal-chart"
 import { SymptomsChart } from "@/components/symptoms-chart"
 import { InsightsDashboard } from "@/components/insights-dashboard"
 import { PeriodCalendar } from "@/components/period-calendar"
-
+import { WaitlistButton } from "@/components/waitlist-button"
 export default function LandingPage() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -182,9 +182,16 @@ export default function LandingPage() {
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Link>
                   </Button>
-                  <Button size="lg" variant="outline" asChild>
+                   <WaitlistButton size="lg" variant="outline" />
+
+
+      {/* <WaitlistButton>Notify Me!</WaitlistButton> */}
+                  {/* <WaitlistButton size="lg" variant="outline" apiBaseUrl="http://localhost:8000/api">
+                    Join Waitlist
+                  </WaitlistButton> */}
+                  {/* <Button size="lg" variant="outline" asChild>
                     <Link to="#learn-more">Learn More</Link>
-                  </Button>
+                  </Button> */}
                 </div>
                 <div className="flex items-center gap-4 pt-6">
                   <div className="flex -space-x-2">
