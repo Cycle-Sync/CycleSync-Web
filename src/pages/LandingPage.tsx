@@ -83,7 +83,7 @@ export default function LandingPage() {
             <Button variant="outline" asChild>
               <Link to="/login">Log in</Link>
             </Button>
-            {/* <Button className="bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-700" asChild>
+            {/* <Button className="bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-700">
               <Link to="/signup">Get Started</Link>
             </Button> */}
             <WaitlistButton className="bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-700" >
@@ -177,26 +177,9 @@ export default function LandingPage() {
                     Get Started Free
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </WaitlistButton>
-                  {/* <Button
-                    size="lg"
-                    className="bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-700"
-                    asChild
-                  >
-                    <Link to="/login">
-                      Get Started Free
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </Button> */}
+  
                   <WaitlistButton size="lg" variant="outline" />
 
-
-                  {/* <WaitlistButton>Notify Me!</WaitlistButton> */}
-                  {/*                   <WaitlistButton size="lg" variant="outline" apiBaseUrl="http://localhost:8000/api">
-                    Join Waitlist
-                  </WaitlistButton> */}
-                  {/* <Button size="lg" variant="outline" asChild>
-                    <Link to="#learn-more">Learn More</Link>
-                  </Button> */}
                 </div>
                 <div className="flex items-center gap-4 pt-6">
                   <div className="flex -space-x-2">
@@ -660,23 +643,14 @@ export default function LandingPage() {
                 Join thousands of women who are taking control of their menstrual health with privacy and confidence.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                {/* <Button
-                  size="lg"
-                  className="bg-white text-rose-600 hover:bg-white/90 dark:bg-gray-950 dark:text-rose-500 dark:hover:bg-gray-900"
-                  asChild
-                >
-                  <Link to="/signup">
-                    Get Started Free
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Link>
-                </Button> */}
+
                 <WaitlistButton size="lg"
                   className="bg-white text-rose-600 hover:bg-white/90 dark:bg-gray-950 dark:text-rose-500 dark:hover:bg-gray-900"
                   asChild >
                   Get Started Free
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </WaitlistButton>
-                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10" asChild>
+                <Button size="lg" variant="outline" className="border-white text-black hover:bg-white/10" asChild>
                   <Link to="/contact">Contact Us</Link>
                 </Button>
               </div>
