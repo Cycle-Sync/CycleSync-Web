@@ -84,7 +84,7 @@ export default function PrivacyPolicyPage() {
             <Button variant="outline" asChild>
               <Link to="/login">Log in</Link>
             </Button>
-            <WaitlistButton className="bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-700" asChild>
+            <WaitlistButton className="bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-700" >
               Get Started Free
             </WaitlistButton>
             {/* <Button className="bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-700" asChild>
@@ -142,7 +142,7 @@ export default function PrivacyPolicyPage() {
                 <Button variant="outline" asChild className="w-full">
                   <Link to="/login">Log in</Link>
                 </Button>
-                <WaitlistButton className="bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-700" asChild>
+                <WaitlistButton className="bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-700" >
                   Get Started Free
                 </WaitlistButton>
                 {/* <Button
