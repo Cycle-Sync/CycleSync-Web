@@ -141,9 +141,9 @@ export default function LandingPage() {
                 <Button variant="outline" asChild className="w-full">
                   <Link to="/login">Log in</Link>
                 </Button>
-               <WaitlistButton className="bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-700" >
+                <WaitlistButton className="bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-700" >
                   Get Started
-             </WaitlistButton>
+                </WaitlistButton>
               </div>
             </div>
           </motion.div>
@@ -173,11 +173,11 @@ export default function LandingPage() {
                 <div className="flex flex-col sm:flex-row gap-3 pt-4">
                   <WaitlistButton size="lg"
                     className="bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-700"
-                    asChild >
+                  >
                     Get Started Free
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </WaitlistButton>
-  
+
                   <WaitlistButton size="lg" variant="outline" />
 
                 </div>
@@ -646,7 +646,7 @@ export default function LandingPage() {
 
                 <WaitlistButton size="lg"
                   className="bg-white text-rose-600 hover:bg-white/90 dark:bg-gray-950 dark:text-rose-500 dark:hover:bg-gray-900"
-                  asChild >
+                >
                   Get Started Free
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </WaitlistButton>
@@ -654,7 +654,7 @@ export default function LandingPage() {
                   <Link to="/contact">Contact Us</Link>
                 </Button>
               </div>
-              <p className="mt-6 text-sm opacity-80">No credit card required. Free 30-day trial.</p>
+              {/* <p className="mt-6 text-sm opacity-80">No credit card required. Free 30-day trial.</p> */}
             </motion.div>
           </div>
         </section>
