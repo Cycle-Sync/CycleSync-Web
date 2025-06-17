@@ -141,12 +141,9 @@ export default function LandingPage() {
                 <Button variant="outline" asChild className="w-full">
                   <Link to="/login">Log in</Link>
                 </Button>
-                <Button
-                  className="w-full bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-700"
-                  asChild
-                >
-                  <Link to="/signup">Get Started</Link>
-                </Button>
+               <WaitlistButton className="bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-700" asChild>
+                  Get Started
+             </WaitlistButton>
               </div>
             </div>
           </motion.div>
