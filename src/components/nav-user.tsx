@@ -61,19 +61,29 @@ export function NavUser() {
   if (error) return <div>Error: {error}</div>;
   if (!user) return null;
 
-  // Construct display name
+  // // Construct display name
+  // const displayName =
+  //   user.first_name && user.last_name
+  //     ? `${user.first_name} ${user.last_name}`
+  //     : user.username;
+
+  // // Fallback initials for avatar
+  // const fallbackInitials = displayName
+  //   .split(" ")
+  //   .map((n: string) => n[0])
+  //   .join("")
+  //   .slice(0, 2)
+  //   .toUpperCase();
   const displayName =
     user.first_name && user.last_name
       ? `${user.first_name} ${user.last_name}`
-      : user.username;
+      : user.username || "";
 
   // Fallback initials for avatar
-  const fallbackInitials = displayName
-    .split(" ")
-    .map((n: string) => n[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
+  const nameParts = displayName.trim() ? displayName.trim().split(" ") : [];
+  const fallbackInitials = nameParts.length > 0
+    ? nameParts.map(n => n[0]).join("").slice(0, 2).toUpperCase()
+    : "";
 
   return (
     <SidebarMenu>
