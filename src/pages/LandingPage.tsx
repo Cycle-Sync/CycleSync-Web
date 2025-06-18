@@ -604,11 +604,11 @@ export default function LandingPage() {
                   answer:
                     "CycleSync is designed to adapt to your unique patterns, including irregular cycles. The more data you provide, the better our algorithm can identify patterns and provide personalized insights.",
                 },
-                {
-                  question: "Do you offer a free trial?",
-                  answer:
-                    "Yes, we offer a 30-day free trial with full access to all features. After the trial period, you can continue with a free basic plan or upgrade to our premium plan for advanced features.",
-                },
+                // {
+                //   question: "Do you offer a free trial?",
+                //   answer:
+                //     "Yes, we offer a 30-day free trial with full access to all features. After the trial period, you can continue with a free basic plan or upgrade to our premium plan for advanced features.",
+                // },
               ].map((faq, i) => (
                 <motion.div
                   key={i}
