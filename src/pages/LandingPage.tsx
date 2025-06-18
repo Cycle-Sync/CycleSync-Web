@@ -188,7 +188,7 @@ export default function LandingPage() {
                     ))}
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    Trusted by <span className="font-medium text-foreground">100+</span> women
+                    Trusted by <span className="font-medium text-foreground">20+</span> women
                   </p>
                 </div>
               </motion.div>
@@ -640,7 +640,7 @@ export default function LandingPage() {
                 Ready to understand your body better?
               </h2>
               <p className="text-xl opacity-90 mb-8">
-                Join thousands of women who are taking control of their menstrual health with privacy and confidence.
+                Join a community of women who are taking control of their menstrual health with privacy and confidence.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
 
