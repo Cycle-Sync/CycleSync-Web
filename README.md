@@ -309,10 +309,7 @@ This project is licensed under the GPL-3.0 license - see the [LICENSE](LICENSE) 
 
 ## 🙋‍♀️ Support & Community
 
-- **Documentation:** [Read the docs](https://docs.cyclesync.app)
-- **Community Forum:** [Join discussions](https://community.cyclesync.app)
-- **Email Support:** support@cyclesync.app
-- **Twitter:** [@CycleSyncApp](https://twitter.com/CycleSyncApp)
+
 
 ---
 
